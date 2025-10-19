@@ -1,3 +1,4 @@
+import 'package:dentiste/pages/homePage.dart';
 import 'package:flutter/material.dart';
 import 'pages/authentification/loginPage.dart';
 
@@ -12,7 +13,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final routes = {
-    '/login': (context) =>  LoginPage(),
+    '/login': (context) => LoginPage(),
+    '/home': (context) => HomePage(),
   };
 
   @override
