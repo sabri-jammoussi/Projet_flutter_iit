@@ -1,7 +1,39 @@
+import 'package:dentiste/pages/homePage.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _login() async {
+    final prefs = await SharedPreferences.getInstance();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // Simple example (you can later replace this with API login)
+    if (username.isNotEmpty && password.isNotEmpty) {
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('username', username);
+
+      // Navigate to home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter username and password')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +43,12 @@ class LoginPage extends StatelessWidget {
         children: [
           // 🔹 Background Image
           Image.asset(
-            '/images/dentist.jpg', // make sure this image exists
-            width: 100,
-            height: 100,
+            '/dentist.jpg', // ✅ correct path
+            fit: BoxFit.cover,
           ),
           ///gggggg
 
-          // 🔹 Semi-transparent overlay (optional, for better readability)
+          // 🔹 Semi-transparent overlay
           Container(
             color: Colors.black.withOpacity(0.3),
           ),
@@ -40,8 +71,9 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
                       labelText: 'Username',
@@ -50,9 +82,10 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const TextField(
+                  TextField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
                       labelText: 'Password',
@@ -62,7 +95,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(vertical: 16),
