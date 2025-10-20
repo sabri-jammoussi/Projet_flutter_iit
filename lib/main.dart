@@ -1,19 +1,34 @@
-import 'package:dentiste/pages/homePage.dart';
+import 'package:dentiste/pages/appointment/appointment_controller.dart';
 import 'package:flutter/material.dart';
-import 'pages/authentification/loginPage.dart';
+import 'package:provider/provider.dart';
+import 'package:dentiste/pages/authentification/login_page.dart';
+import 'package:dentiste/pages/home/home_page.dart';
+import 'package:dentiste/pages/patient/patient_controller.dart';
+import 'package:dentiste/pages/billing/billing_controller.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => PatientController()..loadPatients()),
+        ChangeNotifierProvider(create: (_) => BillingController()..loadFactures()),
+        ChangeNotifierProvider(create: (_) => AppointmentController()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final routes = {
-    '/login': (context) => LoginPage(),
+    '/login': (context) => const LoginPage(),
     '/home': (context) => HomePage(),
   };
 
@@ -21,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login', // optional: set the starting page
+      initialRoute: '/login',
       routes: routes,
     );
   }

@@ -1,4 +1,4 @@
-import 'package:dentiste/pages/homePage.dart';
+import 'package:dentiste/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // 🔹 Background Image
           Image.asset(
-            '/dentist.jpg', // ✅ correct path
+            'assets/images/dentist.jpg', // ✅ correct path
             fit: BoxFit.cover,
           ),
           ///gggggg
