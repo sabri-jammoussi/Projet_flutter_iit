@@ -1,5 +1,6 @@
 import 'package:dentiste/firebase_options.dart';
 import 'package:dentiste/pages/appointment/appointment_controller.dart';
+import 'package:dentiste/pages/authentification/singup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/pages/authentification/login_page.dart';
@@ -39,6 +40,7 @@ class _MyAppState extends State<MyApp> {
   final routes = {
     '/login': (context) => const LoginPage(),
     '/home': (context) => HomePage(),
+    '/singup': (context)=> SignupPage()
   };
 
   @override
