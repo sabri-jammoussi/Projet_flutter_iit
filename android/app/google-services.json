@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75752383317",
+    "project_id": "dentiste2-4e76b",
+    "storage_bucket": "dentiste2-4e76b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75752383317:android:c8aafddefdbfdac4f805dc",
+        "android_client_info": {
+          "package_name": "com.example.dentiste"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8PjHJAFsIZ_4lWbsUiAGcyTI46VKW1Mg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,7 @@
 import 'package:dentiste/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -10,28 +10,58 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool _loading = false;
 
   Future<void> _login() async {
-    final prefs = await SharedPreferences.getInstance();
-    String username = _usernameController.text.trim();
+    String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
-    // Simple example (you can later replace this with API login)
-    if (username.isNotEmpty && password.isNotEmpty) {
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password')),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      // Sign in with Firebase Auth
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Save login state locally
+      final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('username', username);
+      await prefs.setString('userEmail', email);
 
       // Navigate to home
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
-    } else {
+    } on FirebaseAuthException catch (e) {
+      String message = 'Login failed';
+      if (e.code == 'user-not-found') {
+        message = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Wrong password provided.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter username and password')),
+        SnackBar(content: Text(message)),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred. Please try again.')),
+      );
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -41,19 +71,11 @@ class _LoginPageState extends State<LoginPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 🔹 Background Image
           Image.asset(
-            'assets/images/dentist.jpg', // ✅ correct path
+            'assets/images/dentist.jpg',
             fit: BoxFit.cover,
           ),
-          ///gggggg
-
-          // 🔹 Semi-transparent overlay
-          Container(
-            color: Colors.black.withOpacity(0.3),
-          ),
-
-          // 🔹 Login Form
+          Container(color: Colors.black.withOpacity(0.3)),
           Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -65,20 +87,19 @@ class _LoginPageState extends State<LoginPage> {
                     'Login',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                   const SizedBox(height: 40),
                   TextField(
-                    controller: _usernameController,
+                    controller: _emailController,
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      labelText: 'Username',
+                      labelText: 'Email',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: Icon(Icons.email),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -95,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: _login,
+                    onPressed: _loading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -103,10 +124,14 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                    child: _loading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                   ),
                 ],
               ),
