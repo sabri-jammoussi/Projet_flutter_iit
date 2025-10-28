@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.3
   provider: ^6.1.1
+  firebase_core: ^2.0.0
+  firebase_auth: ^4.14.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -56,10 +59,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  
+
   # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/images/dentist.jpg
+    - assets/images/dentist.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
