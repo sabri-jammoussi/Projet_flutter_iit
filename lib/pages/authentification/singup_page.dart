@@ -3,27 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _loading = false;
 
-  Future<void> _login() async {
+  Future<void> _signup() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
       );
       return;
     }
@@ -31,8 +41,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      // Sign in with Firebase Auth
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      // Create user with Firebase Auth
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -42,17 +53,17 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setBool('isLoggedIn', true);
       await prefs.setString('userEmail', email);
 
-      // Navigate to home
+      // Navigate to Home
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     } on FirebaseAuthException catch (e) {
-      String message = 'Login failed';
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided.';
+      String message = 'Signup failed';
+      if (e.code == 'email-already-in-use') {
+        message = 'Email is already in use';
+      } else if (e.code == 'weak-password') {
+        message = 'Password is too weak';
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
@@ -85,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'Login',
+                    'Sign Up',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 32,
@@ -115,9 +126,21 @@ class _LoginPageState extends State<LoginPage> {
                       prefixIcon: Icon(Icons.lock),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Confirm Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock),
+                    ),
+                  ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: _loading ? null : _login,
+                    onPressed: _loading ? null : _signup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -130,18 +153,20 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white,
                           )
                         : const Text(
-                            'Login',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            'Sign Up',
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.white),
                           ),
                   ),
+                  const SizedBox(height: 20),
                   TextButton(
-                    child: Text("Don't have an account ? ",
-                        style: TextStyle(fontSize: 22)),
                     onPressed: () {
-                      //_login();
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/singup');
+                      Navigator.pop(context); // go back to login
                     },
+                    child: const Text(
+                      'Already have an account? Login',
+                      style: TextStyle(color: Colors.white70),
+                    ),
                   ),
                 ],
               ),
