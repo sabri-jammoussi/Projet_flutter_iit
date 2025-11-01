@@ -1,3 +1,4 @@
+import 'package:dentiste/models/acte_medicale.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/models/facture.dart';
@@ -23,22 +24,32 @@ class BillingForm extends StatefulWidget {
 class _BillingFormState extends State<BillingForm> {
   final _formKey = GlobalKey<FormState>();
   Patient? selectedPatient;
-  double montant = 0.0;
-  StatutPaiement statut = StatutPaiement.impaye;
+  double montantPaye = 0.0;
   String modePaiement = 'Espèces';
+
+  // Soins disponibles
+  final List<ActeMedical> soinsDisponibles = [
+    ActeMedical(nom: 'Consultation', tarif: 50.0),
+    ActeMedical(nom: 'Détartrage', tarif: 80.0),
+    ActeMedical(nom: 'Extraction', tarif: 100.0),
+  ];
+
+  List<ActeMedical> soinsChoisis = [];
 
   @override
   void initState() {
     super.initState();
     selectedPatient = widget.facture?.patient ?? widget.patient;
-    montant = widget.facture?.montant ?? 0.0;
-    statut = widget.facture?.statut ?? StatutPaiement.impaye;
+    montantPaye = widget.facture?.montantPaye ?? 0.0;
     modePaiement = widget.facture?.modePaiement ?? 'Espèces';
+    soinsChoisis = widget.facture?.actes ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     final patients = Provider.of<PatientController>(context).patients;
+
+    double montantTotal = soinsChoisis.fold(0, (sum, soin) => sum + soin.tarif);
 
     return AlertDialog(
       title: Text(widget.facture == null ? 'Nouvelle facture' : 'Modifier facture'),
@@ -63,35 +74,41 @@ class _BillingFormState extends State<BillingForm> {
                 validator: (value) =>
                     value == null ? 'Veuillez sélectionner un patient' : null,
               ),
-              TextFormField(
-                initialValue: montant.toString(),
-                decoration: const InputDecoration(labelText: 'Montant'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) =>
-                    montant = double.tryParse(value ?? '') ?? 0.0,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Champ requis' : null,
-              ),
-              DropdownButtonFormField<StatutPaiement>(
-                decoration:
-                    const InputDecoration(labelText: 'Statut de paiement'),
-                value: statut,
-                items: StatutPaiement.values.map((s) {
-                  return DropdownMenuItem(
-                    value: s,
-                    child: Text(s.name),
-                  );
-                }).toList(),
-                onChanged: (value) => setState(() => statut = value!),
-              ),
+              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                decoration:
-                    const InputDecoration(labelText: 'Mode de paiement'),
+                decoration: const InputDecoration(labelText: 'Mode de paiement'),
                 value: modePaiement,
                 items: ['Espèces', 'Carte', 'Virement', 'Assurance'].map((m) {
                   return DropdownMenuItem(value: m, child: Text(m));
                 }).toList(),
                 onChanged: (value) => setState(() => modePaiement = value!),
+              ),
+              const SizedBox(height: 12),
+              const Text('Soins réalisés :', style: TextStyle(fontWeight: FontWeight.bold)),
+              ...soinsDisponibles.map((soin) {
+                return CheckboxListTile(
+                  title: Text('${soin.nom} - ${soin.tarif.toStringAsFixed(2)} TND'),
+                  value: soinsChoisis.contains(soin),
+                  onChanged: (selected) {
+                    setState(() {
+                      selected!
+                          ? soinsChoisis.add(soin)
+                          : soinsChoisis.remove(soin);
+                    });
+                  },
+                );
+              }).toList(),
+              const SizedBox(height: 12),
+              Text('Montant total : ${montantTotal.toStringAsFixed(2)} TND'),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Montant payé'),
+                initialValue: montantPaye.toString(),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    montantPaye = double.tryParse(value) ?? 0.0;
+                  });
+                },
               ),
             ],
           ),
@@ -101,18 +118,29 @@ class _BillingFormState extends State<BillingForm> {
         TextButton(
           onPressed: () {
             if (_formKey.currentState?.validate() ?? false) {
-              _formKey.currentState?.save();
+              if (soinsChoisis.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Veuillez sélectionner au moins un soin')),
+                );
+                return;
+              }
+
               widget.onSubmit(Facture(
+                id: widget.facture?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                 patient: selectedPatient!,
-                montant: montant,
                 date: DateTime.now(),
-                statut: statut,
+                actes: soinsChoisis,
+                montantPaye: montantPaye,
                 modePaiement: modePaiement,
               ));
               Navigator.pop(context);
             }
           },
           child: Text(widget.facture == null ? 'Ajouter' : 'Modifier'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annuler'),
         ),
       ],
     );

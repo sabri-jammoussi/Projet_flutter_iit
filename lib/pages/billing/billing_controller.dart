@@ -7,19 +7,19 @@ class BillingController extends ChangeNotifier {
 
   List<Facture> get factures => _factures;
 double get totalFactures =>
-    factures.fold(0.0, (sum, f) => sum + f.montant);
+    factures.fold(0.0, (sum, f) => sum + f.montantPaye);
 
 double get totalPaye =>
     factures.where((f) => f.statut == StatutPaiement.paye)
-            .fold(0.0, (sum, f) => sum + f.montant);
+            .fold(0.0, (sum, f) => sum + f.montantPaye);
 
 double get totalPartiel =>
     factures.where((f) => f.statut == StatutPaiement.partiel)
-            .fold(0.0, (sum, f) => sum + f.montant);
+            .fold(0.0, (sum, f) => sum + f.montantPaye);
 
 double get totalImpaye =>
     factures.where((f) => f.statut == StatutPaiement.impaye)
-            .fold(0.0, (sum, f) => sum + f.montant);
+            .fold(0.0, (sum, f) => sum + f.montantPaye);
 
   void loadFactures() {
   _factures.addAll([]);
@@ -37,7 +37,7 @@ double get totalImpaye =>
   }
   List<Facture> facturesPour(Patient patient) =>
     factures.where((f) => f.patient == patient).toList();
-    
+
   void updateFacture(Facture oldFacture, Facture newFacture) {
   final index = factures.indexOf(oldFacture);
   if (index != -1) {
