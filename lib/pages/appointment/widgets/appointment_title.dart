@@ -32,10 +32,17 @@ class AppointmentTile extends StatelessWidget {
     }
   }
 
+  String _formattedDateTime(DateTime dateTime) {
+    final date = '${dateTime.day.toString().padLeft(2, '0')}/'
+        '${dateTime.month.toString().padLeft(2, '0')}/'
+        '${dateTime.year}';
+    final time = '${dateTime.hour.toString().padLeft(2, '0')}:'
+        '${dateTime.minute.toString().padLeft(2, '0')}';
+    return '$date à $time';
+  }
+
   @override
   Widget build(BuildContext context) {
-    final time = '${appointment.dateTime.hour.toString().padLeft(2, '0')}:${appointment.dateTime.minute.toString().padLeft(2, '0')}';
-
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: ListTile(
@@ -44,7 +51,7 @@ class AppointmentTile extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${appointment.reason} — $time'),
+            Text('Rendez-vous — ${_formattedDateTime(appointment.dateTime)}'),
             const SizedBox(height: 6),
             Row(
               children: [
@@ -58,7 +65,7 @@ class AppointmentTile extends StatelessWidget {
                   child: Text(
                     _statusLabel(appointment.status),
                     style: const TextStyle(
-                      color: Colors.pink,
+                      color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),

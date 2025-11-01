@@ -1,12 +1,12 @@
-import 'package:dentiste/pages/appointment/widgets/appointment_title.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/models/patient.dart';
+import 'package:dentiste/pages/appointment/appointment_controller.dart';
+import 'package:dentiste/pages/appointment/widgets/appointment_form.dart';
+import 'package:dentiste/pages/appointment/widgets/appointment_title.dart';
 import 'package:dentiste/pages/billing/billing_controller.dart';
 import 'package:dentiste/pages/billing/widgets/billing_card.dart';
 import 'package:dentiste/pages/billing/widgets/billing_form.dart';
-import 'package:dentiste/pages/appointment/appointment_controller.dart';
-import 'package:dentiste/pages/appointment/widgets/appointment_form.dart';
 
 class PatientDetailsPage extends StatelessWidget {
   final Patient patient;
@@ -69,13 +69,13 @@ class PatientDetailsPage extends StatelessWidget {
           // Appointments
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('Appointments',
+            child: Text('Rendez-vous',
                 style: Theme.of(context).textTheme.titleMedium),
           ),
           SizedBox(
             height: 200,
             child: appointments.isEmpty
-                ? const Center(child: Text('No appointments for this patient.'))
+                ? const Center(child: Text('Aucun rendez-vous pour ce patient.'))
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: appointments.length,
@@ -116,7 +116,7 @@ class PatientDetailsPage extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.calendar_today),
-                  title: const Text('Ajouter un appointment'),
+                  title: const Text('Ajouter un rendez-vous'),
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(
@@ -128,6 +128,27 @@ class PatientDetailsPage extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         patient: patient,
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.flash_on),
+                  title: const Text('Facturer automatiquement'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (_) => BillingForm(
+                        patient: patient,
+                        onSubmit: (newFacture) {
+                          Provider.of<BillingController>(context, listen: false)
+                              .addFacture(newFacture);
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Facture générée automatiquement')),
+                          );
+                        },
                       ),
                     );
                   },
