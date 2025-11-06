@@ -52,7 +52,8 @@ class _BillingFormState extends State<BillingForm> {
     double montantTotal = soinsChoisis.fold(0, (sum, soin) => sum + soin.tarif);
 
     return AlertDialog(
-      title: Text(widget.facture == null ? 'Nouvelle facture' : 'Modifier facture'),
+      title: Text(
+          widget.facture == null ? 'Nouvelle facture' : 'Modifier facture'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -76,7 +77,8 @@ class _BillingFormState extends State<BillingForm> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Mode de paiement'),
+                decoration:
+                    const InputDecoration(labelText: 'Mode de paiement'),
                 value: modePaiement,
                 items: ['Espèces', 'Carte', 'Virement', 'Assurance'].map((m) {
                   return DropdownMenuItem(value: m, child: Text(m));
@@ -84,10 +86,12 @@ class _BillingFormState extends State<BillingForm> {
                 onChanged: (value) => setState(() => modePaiement = value!),
               ),
               const SizedBox(height: 12),
-              const Text('Soins réalisés :', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Soins réalisés :',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               ...soinsDisponibles.map((soin) {
                 return CheckboxListTile(
-                  title: Text('${soin.nom} - ${soin.tarif.toStringAsFixed(2)} TND'),
+                  title: Text(
+                      '${soin.nom} - ${soin.tarif.toStringAsFixed(2)} TND'),
                   value: soinsChoisis.contains(soin),
                   onChanged: (selected) {
                     setState(() {
@@ -120,13 +124,15 @@ class _BillingFormState extends State<BillingForm> {
             if (_formKey.currentState?.validate() ?? false) {
               if (soinsChoisis.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Veuillez sélectionner au moins un soin')),
+                  const SnackBar(
+                      content: Text('Veuillez sélectionner au moins un soin')),
                 );
                 return;
               }
 
               widget.onSubmit(Facture(
-                id: widget.facture?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                id: widget.facture?.id ??
+                    DateTime.now().millisecondsSinceEpoch.toString(),
                 patient: selectedPatient!,
                 date: DateTime.now(),
                 actes: soinsChoisis,

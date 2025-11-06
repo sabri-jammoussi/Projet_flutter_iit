@@ -43,10 +43,12 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('userEmail', email);
 
       // Navigate to home
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => HomePage()),
+      // );
+      Navigator.pushReplacementNamed(context, '/home');
+      // Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       String message = 'Login failed';
       if (e.code == 'user-not-found') {

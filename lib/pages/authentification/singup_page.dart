@@ -54,10 +54,7 @@ class _SignupPageState extends State<SignupPage> {
       await prefs.setString('userEmail', email);
 
       // Navigate to Home
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       String message = 'Signup failed';
       if (e.code == 'email-already-in-use') {
@@ -154,14 +151,14 @@ class _SignupPageState extends State<SignupPage> {
                           )
                         : const Text(
                             'Sign Up',
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.white),
+                            style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                   ),
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context); // go back to login
+                      // Navigator.pop(context); // go back to login
+                      Navigator.pushReplacementNamed(context, '/login');
                     },
                     child: const Text(
                       'Already have an account? Login',
