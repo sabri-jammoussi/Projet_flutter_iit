@@ -1,3 +1,5 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dentiste/menu/drawer_widget.dart';
 import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dentiste/pages/home/home_controller.dart';
@@ -7,41 +9,72 @@ import 'package:dentiste/pages/patient/patient_page.dart';
 import 'package:dentiste/pages/appointment/appointment_page.dart';
 import 'package:dentiste/pages/billing/billing_page.dart';
 import 'package:dentiste/pages/statistics/statistics_page.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class HomePage extends StatelessWidget {
   final controller = HomeController();
 
   HomePage({Key? key}) : super(key: key);
-
+// for changing the the daarkmode
+  toggleDarkMode() {
+    if (Get.isDarkMode) {
+      Get.changeTheme(ThemeData.light());
+    } else {
+      Get.changeTheme(ThemeData.dark());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Colors.amberAccent, Colors.orange]),
-              ),
-              child: Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('assets/images/dentist.jpg'),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Déconnexion'),
-              onTap: () => controller.logout(context),
-            ),
-          ],
-        ),
-      ),
+      drawer: MyDrawer(),
       appBar: AppBar(
         title: const Text('Tableau de bord'),
         backgroundColor: Colors.teal,
+                actions: [
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return [
+                // PopupMenuItem(
+                //   child: ListTile(
+                //     leading: Icon(Icons.map),
+                //     title: Text('maps'.tr),
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) =>
+                //               MapScreen(), // Replace MapsScreen with the actual screen you want to navigate to
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: Icon(Get.isDarkMode
+                        ? Icons.brightness_7
+                        : Icons.brightness_3),
+                    title: Text('darkmode'.tr),
+                    onTap: () {
+                      toggleDarkMode();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                // PopupMenuItem(
+                //   child: ListTile(
+                //     leading: Icon(Icons.language),
+                //     title: Text('Choisissez votre langue'.tr),
+                //     onTap: () {
+                //       buildLanguageDialog(context);
+                //     },
+                //   ),
+                // ),
+              ];
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -75,10 +108,15 @@ class HomePage extends StatelessWidget {
             const Text('Accès rapide',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 130,
+                enlargeCenterPage: true,
+                enableInfiniteScroll: true,
+                autoPlay: true,
+                viewportFraction: 0.45,
+              ),
+              items: [
                 QuickButton(
                     icon: Icons.people,
                     label: 'Patients',

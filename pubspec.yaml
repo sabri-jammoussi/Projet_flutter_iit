@@ -42,7 +42,9 @@ dependencies:
   google_mlkit_text_recognition: ^0.13.0
   image_picker: ^1.0.7
   camera: 0.10.5+2
-
+  carousel_slider: ^4.2.1
+  local_auth: ^2.1.0
+  get:
 dev_dependencies:
   flutter_test:
     sdk: flutter
