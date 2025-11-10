@@ -6,6 +6,7 @@ import 'package:dentiste/pages/billing/billing_page.dart';
 import 'package:dentiste/pages/patient/patient_page.dart';
 import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
 import 'package:dentiste/pages/statistics/statistics_page.dart';
+import 'package:dentiste/translations/LocaleString.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final List locale = [
+    {'name': 'FRANCE', 'locale': Locale('en', 'FR')},
+    {'name': 'ENGLISH', 'locale': Locale('en', 'US')},
+    {'name': 'اللغة العربية', 'locale': Locale('en', 'AR')},
+  ];
   final routes = {
     '/login': (context) => const LoginPage(),
     '/home': (context) => HomePage(),
@@ -62,6 +68,9 @@ class _MyAppState extends State<MyApp> {
     //   routes: routes,
     // );
     return GetMaterialApp(
+      translations: LocalString(),
+      locale: Locale('en', 'FR'),
+      fallbackLocale: Locale('en', 'FR'),
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       theme: ThemeData.light(),
