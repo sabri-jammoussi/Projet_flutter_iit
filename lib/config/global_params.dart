@@ -37,7 +37,7 @@ class GlobalParams {
     {
       "title": "Statistiques",
       "icon": Icon(
-        Icons.contact_page,
+        Icons.bar_chart,
         color: Colors.teal,
       ),
       "route": "/statistiques"

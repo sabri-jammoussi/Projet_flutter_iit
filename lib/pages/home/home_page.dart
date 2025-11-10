@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dentiste/config/global_params.dart';
+import 'package:dentiste/maps/maps_page.dart';
 import 'package:dentiste/menu/drawer_widget.dart';
 import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +13,20 @@ import 'package:dentiste/pages/billing/billing_page.dart';
 import 'package:dentiste/pages/statistics/statistics_page.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import '../../translations/LocaleString.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final controller = HomeController();
 
-  HomePage({Key? key}) : super(key: key);
+  int _currentIndex = 0;
+
 // for changing the the daarkmode
   toggleDarkMode() {
     if (Get.isDarkMode) {
@@ -24,32 +35,88 @@ class HomePage extends StatelessWidget {
       Get.changeTheme(ThemeData.dark());
     }
   }
+
+  final List<Widget> pages = [
+    HomePage(),
+    PatientPage(),
+    AppointmentPage(),
+    BillingPage(),
+    StatisticsPage(),
+    RecognitionPage(),
+  ];
+  final List locale = [
+    {'name': 'FRANÇAIS', 'locale': Locale('en', 'FR')},
+    {'name': 'ENGLISH', 'locale': Locale('en', 'US')},
+    {'name': 'العربية', 'locale': Locale('en', 'AR')},
+  ];
+
+  updateLanguage(Locale locale) {
+    Get.updateLocale(locale);
+    Get.back();
+  }
+
+  buildLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (builder) {
+        return AlertDialog(
+          title: Text('Choisissez votre langue'.tr),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    child: Text(locale[index]['name']),
+                    onTap: () {
+                      print(locale[index]['name']);
+                      updateLanguage(locale[index]['locale']);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) {
+                return Divider(
+                  color: Colors.blue,
+                );
+              },
+              itemCount: locale.length,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
-        title: const Text('Tableau de bord'),
+        title: Text('dashboard'.tr),
         backgroundColor: Colors.teal,
-                actions: [
+        actions: [
           PopupMenuButton(
             itemBuilder: (BuildContext context) {
               return [
-                // PopupMenuItem(
-                //   child: ListTile(
-                //     leading: Icon(Icons.map),
-                //     title: Text('maps'.tr),
-                //     onTap: () {
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) =>
-                //               MapScreen(), // Replace MapsScreen with the actual screen you want to navigate to
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ),
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: Icon(Icons.map),
+                    title: Text('maps'.tr),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapScreen(), // Replace MapsScreen with the actual screen you want to navigate to
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 PopupMenuItem(
                   child: ListTile(
                     leading: Icon(Get.isDarkMode
@@ -62,15 +129,15 @@ class HomePage extends StatelessWidget {
                     },
                   ),
                 ),
-                // PopupMenuItem(
-                //   child: ListTile(
-                //     leading: Icon(Icons.language),
-                //     title: Text('Choisissez votre langue'.tr),
-                //     onTap: () {
-                //       buildLanguageDialog(context);
-                //     },
-                //   ),
-                // ),
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: Icon(Icons.language),
+                    title: Text('Choisissez votre langue'.tr),
+                    onTap: () {
+                      buildLanguageDialog(context);
+                    },
+                  ),
+                ),
               ];
             },
           ),
@@ -81,7 +148,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Bienvenue Dr. [Nom]',
+            Text('welcome_doctor'.tr,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const DashboardCard(
@@ -105,7 +172,7 @@ class HomePage extends StatelessWidget {
                 value: '14',
                 color: Colors.purple),
             const SizedBox(height: 24),
-            const Text('Accès rapide',
+            Text('quick_access'.tr,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             CarouselSlider(
@@ -166,6 +233,31 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.teal,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+
+          final route = GlobalParams.menus[index]["route"];
+          if (route != "/home") {
+            Navigator.pushNamed(context, route);
+          }
+        },
+        items: GlobalParams.menus
+            .take(6)
+            .map(
+              (menu) => BottomNavigationBarItem(
+                icon: menu["icon"],
+                label: menu["title"],
+              ),
+            )
+            .toList(),
       ),
     );
   }
