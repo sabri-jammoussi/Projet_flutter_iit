@@ -29,7 +29,6 @@ class _AppointmentFormState extends State<AppointmentForm> {
       case AppointmentStatus.completed:
         return 'Terminé';
       case AppointmentStatus.pending:
-      
         return 'En attente';
     }
   }
