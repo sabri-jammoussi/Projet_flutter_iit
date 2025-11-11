@@ -1,5 +1,6 @@
 import 'package:dentiste/config/global_params.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -24,13 +25,13 @@ class MyDrawer extends StatelessWidget {
               children: [
                 ListTile(
                   title: Text(
-                    '${item['title']}',
+                    (item['title'] as String).tr,
                     style: TextStyle(fontSize: 22),
                   ),
                   leading: item['icon'],
                   trailing: Icon(Icons.arrow_right, color: Colors.teal),
                   onTap: () async {
-                    if ('${item['title']}' != "Déconnexion") {
+                    if ('${item['title'.tr]}' != "Déconnexion") {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, "${item['route']}");
                     } else {

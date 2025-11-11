@@ -1,5 +1,6 @@
 import 'package:dentiste/pages/appointment/widgets/appointment_title.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/pages/appointment/appointment_controller.dart';
 import 'package:dentiste/pages/appointment/widgets/appointment_calendar.dart';
@@ -21,7 +22,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     final appointments = controller.forDate(selectedDate);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Appointments')),
+      appBar: AppBar(title: Text('Appointments'.tr)),
       body: Column(
         children: [
           AppointmentCalendar(
@@ -30,7 +31,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           ),
           Expanded(
             child: appointments.isEmpty
-                ? const Center(child: Text('No appointments for this date.'))
+                ? Center(child: Text('No appointments for this date.'))
                 : ListView.builder(
                     itemCount: appointments.length,
                     itemBuilder: (context, index) {

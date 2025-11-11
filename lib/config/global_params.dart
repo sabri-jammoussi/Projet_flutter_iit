@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GlobalParams {
   static List<Map<String, dynamic>> menus = [
     {
-      "title": "Accueil",
+      "title": "dashboard",
       "icon": Icon(
         Icons.home,
         color: Colors.teal,
@@ -11,7 +11,7 @@ class GlobalParams {
       "route": "/home"
     },
     {
-      "title": "Patients",
+      "title": "patients",
       "icon": Icon(
         Icons.people,
         color: Colors.teal,
@@ -19,7 +19,7 @@ class GlobalParams {
       "route": "/patient"
     },
     {
-      "title": "Rendez-vous",
+      "title": "appointments",
       "icon": Icon(
         Icons.calendar_today,
         color: Colors.teal,
@@ -27,7 +27,7 @@ class GlobalParams {
       "route": "/rendezVous"
     },
     {
-      "title": "Facturation",
+      "title": "billing",
       "icon": Icon(
         Icons.receipt,
         color: Colors.teal,
@@ -35,7 +35,7 @@ class GlobalParams {
       "route": "/facturation"
     },
     {
-      "title": "Statistiques",
+      "title": "statistics",
       "icon": Icon(
         Icons.bar_chart,
         color: Colors.teal,
@@ -43,7 +43,7 @@ class GlobalParams {
       "route": "/statistiques"
     },
     {
-      "title": "ML_kit",
+      "title": "mlkit",
       "icon": Icon(
         Icons.contact_page,
         color: Colors.teal,
@@ -51,7 +51,7 @@ class GlobalParams {
       "route": "/scanFacture"
     },
     {
-      "title": "Paramètres",
+      "title": "settings",
       "icon": Icon(
         Icons.settings,
         color: Colors.teal,
@@ -59,7 +59,7 @@ class GlobalParams {
       "route": "/parametres"
     },
     {
-      "title": "Déconnexion",
+      "title": "logout",
       "icon": Icon(
         Icons.logout,
         color: Colors.teal,
