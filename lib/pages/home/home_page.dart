@@ -3,6 +3,7 @@ import 'package:dentiste/config/global_params.dart';
 import 'package:dentiste/maps/maps_page.dart';
 import 'package:dentiste/menu/drawer_widget.dart';
 import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dentiste/pages/home/home_controller.dart';
 import 'package:dentiste/pages/home/widgets/dashboard_card.dart';
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   final controller = HomeController();
 
   int _currentIndex = 0;
+  final user = FirebaseAuth.instance.currentUser;
 
 // for changing the the daarkmode
   toggleDarkMode() {
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                 PopupMenuItem(
                   child: ListTile(
                     leading: Icon(Icons.language),
-                    title: Text('Choisissez votre langue'.tr),
+                    title: Text('choose_language'.tr),
                     onTap: () {
                       buildLanguageDialog(context);
                     },
@@ -148,17 +150,17 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('welcome_doctor'.tr,
+            Text('${'welcome_doctor'.tr} [${user?.email}]',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            const DashboardCard(
+            DashboardCard(
                 icon: Icons.people,
-                title: 'Patients',
+                title: 'patients'.tr,
                 value: '128',
                 color: Colors.blue),
-            const DashboardCard(
+            DashboardCard(
                 icon: Icons.calendar_today,
-                title: 'Rendez-vous',
+                title: 'appointments'.tr,
                 value: '6',
                 color: Colors.green),
             const DashboardCard(
@@ -186,7 +188,7 @@ class _HomePageState extends State<HomePage> {
               items: [
                 QuickButton(
                     icon: Icons.people,
-                    label: 'Patients',
+                    label: 'patients'.tr,
                     onTap: () {
                       Navigator.push(
                           context,
@@ -195,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                     }),
                 QuickButton(
                     icon: Icons.calendar_today,
-                    label: 'Rendez-vous',
+                    label: 'appointments'.tr,
                     onTap: () {
                       Navigator.push(
                           context,
@@ -204,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                     }),
                 QuickButton(
                     icon: Icons.receipt,
-                    label: 'Facturation',
+                    label: 'billing'.tr,
                     onTap: () {
                       Navigator.push(
                           context,
@@ -213,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                     }),
                 QuickButton(
                     icon: Icons.bar_chart,
-                    label: 'Statistiques',
+                    label: 'statistics'.tr,
                     onTap: () {
                       Navigator.push(
                           context,
@@ -254,7 +256,7 @@ class _HomePageState extends State<HomePage> {
             .map(
               (menu) => BottomNavigationBarItem(
                 icon: menu["icon"],
-                label: menu["title"],
+                label: (menu["title"] as String).tr,
               ),
             )
             .toList(),
