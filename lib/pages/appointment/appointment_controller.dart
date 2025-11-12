@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dentiste/models/appointment.dart';
 import 'package:dentiste/models/patient.dart';
@@ -15,13 +14,12 @@ class AppointmentController extends ChangeNotifier {
   Future<void> loadAppointments() async {
     try {
       final snapshot = await _firestore.collection('appointments').get();
-
       _appointments.clear();
 
       for (var doc in snapshot.docs) {
         final data = doc.data();
-
         final appointment = Appointment(
+          id: doc.id,
           patient: Patient(
             nom: data['patientName'] ?? '',
             age: data['patientAge'] ?? 0,
@@ -30,8 +28,6 @@ class AppointmentController extends ChangeNotifier {
           dateTime: (data['dateTime'] as Timestamp).toDate(),
           status: _parseStatus(data['status']),
         );
-        log("AppointmentStatus ==== $appointment");
-        print("eeeeeeeeeeeeeeeeeee :$appointment");
         _appointments.add(appointment);
       }
 
@@ -44,7 +40,7 @@ class AppointmentController extends ChangeNotifier {
   /// Add appointment to Firestore
   Future<void> addAppointment(Appointment appointment) async {
     try {
-      await _firestore.collection('appointments').add({
+      final docRef = await _firestore.collection('appointments').add({
         'patientName': appointment.patient.nom,
         'patientAge': appointment.patient.age,
         'patientEmail': appointment.patient.email,
@@ -52,7 +48,14 @@ class AppointmentController extends ChangeNotifier {
         'status': appointment.status.name,
       });
 
-      _appointments.add(appointment);
+      final newAppointment = Appointment(
+        id: docRef.id,
+        patient: appointment.patient,
+        dateTime: appointment.dateTime,
+        status: appointment.status,
+      );
+
+      _appointments.add(newAppointment);
       notifyListeners();
     } catch (e) {
       print("Error adding appointment: $e");
@@ -62,45 +65,27 @@ class AppointmentController extends ChangeNotifier {
   /// Remove appointment from Firestore
   Future<void> removeAppointment(Appointment appointment) async {
     try {
-      final query = await _firestore
-          .collection('appointments')
-          .where('patientEmail', isEqualTo: appointment.patient.email)
-          .where('dateTime', isEqualTo: appointment.dateTime)
-          .get();
-
-      for (var doc in query.docs) {
-        await _firestore.collection('appointments').doc(doc.id).delete();
-      }
-
-      _appointments.remove(appointment);
+      await _firestore.collection('appointments').doc(appointment.id).delete();
+      _appointments.removeWhere((a) => a.id == appointment.id);
       notifyListeners();
     } catch (e) {
       print("Error deleting appointment: $e");
     }
   }
 
-  /// Update appointment (only status and datetime can change logically)
-  Future<void> updateAppointment(Appointment old, Appointment updated) async {
+  /// Update appointment (status and datetime)
+  Future<void> updateAppointment(Appointment updated) async {
     try {
-      final query = await _firestore
-          .collection('appointments')
-          .where('patientEmail', isEqualTo: old.patient.email)
-          .where('dateTime', isEqualTo: old.dateTime)
-          .get();
+      await _firestore.collection('appointments').doc(updated.id).update({
+        'dateTime': updated.dateTime,
+        'status': updated.status.name,
+      });
 
-      for (var doc in query.docs) {
-        await _firestore.collection('appointments').doc(doc.id).update({
-          'dateTime': updated.dateTime,
-          'status': updated.status.name,
-        });
-      }
-
-      final index = _appointments.indexOf(old);
+      final index = _appointments.indexWhere((a) => a.id == updated.id);
       if (index != -1) {
         _appointments[index] = updated;
+        notifyListeners();
       }
-
-      notifyListeners();
     } catch (e) {
       print("Error updating appointment: $e");
     }
@@ -128,15 +113,12 @@ class AppointmentController extends ChangeNotifier {
 
     if (value == null) return AppointmentStatus.pending;
 
-    // If it's int (old stored version: 0,1,2,3)
     if (value is int) {
       return AppointmentStatus.values[value];
     }
 
-    // Convert string to lowercase safely
     if (value is String) {
-      String v = value.toLowerCase();
-      switch (v) {
+      switch (value.toLowerCase()) {
         case "pending":
           return AppointmentStatus.pending;
         case "confirmed":

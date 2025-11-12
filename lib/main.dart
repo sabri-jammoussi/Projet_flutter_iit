@@ -23,17 +23,22 @@ Future<void> main() async {
   );
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (_) => PatientController()..loadPatients()),
-        ChangeNotifierProvider(
-            create: (_) => BillingController()..loadFactures()),
-        ChangeNotifierProvider(create: (_) => AppointmentController()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (_) => PatientController()..loadPatients(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => BillingController()..loadFactures(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
+      ),
+    ],
+    child: const MyApp(),
+  ),
+);
+
 }
 
 class MyApp extends StatefulWidget {
