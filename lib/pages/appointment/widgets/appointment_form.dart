@@ -123,7 +123,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
               widget.onSubmit(Appointment(
                 patient: selectedPatient!,
                 dateTime: selectedDateTime,
-                
+                status: AppointmentStatus.pending,
               ));
               Navigator.pop(context);
             }
