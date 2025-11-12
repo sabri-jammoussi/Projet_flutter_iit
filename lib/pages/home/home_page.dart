@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const StatisticsPage()));
+                              builder: (_) => StatisticsPage()));
                     }),
                 QuickButton(
                     icon: Icons.bar_chart,
