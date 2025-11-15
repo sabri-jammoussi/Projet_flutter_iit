@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/pages/billing/widgets/billing_card.dart';
 import 'package:dentiste/pages/billing/widgets/billing_form.dart';
+import 'package:dentiste/pages/billing/widgets/billing_summary.dart';
 import 'package:dentiste/pages/billing/billing_controller.dart';
 
 class BillingPage extends StatelessWidget {
@@ -12,57 +13,67 @@ class BillingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Facturation'),
-        backgroundColor: Colors.teal,
+        centerTitle: true,
       ),
       body: Consumer<BillingController>(
         builder: (context, controller, _) {
           final factures = controller.factures;
 
           if (factures.isEmpty) {
-            return const Center(
-              child: Text('Aucune facture enregistrée'),
+            return Center(
+              child: Text(
+                'Aucune facture enregistrée',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: factures.length,
-            itemBuilder: (context, index) {
-              final facture = factures[index];
-              return BillingCard(
-                facture: facture,
-                onDelete: () => controller.removeFacture(facture),
-              );
-            },
+          return Column(
+            children: [
+               BillingSummary(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: factures.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final facture = factures[index];
+                    return BillingCard(
+                      facture: facture,
+                      onDelete: () => controller.removeFacture(facture),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
-      floatingActionButton: Builder(
-        builder: (scaffoldContext) => FloatingActionButton(
-          backgroundColor: Colors.teal,
-          onPressed: () {
-            showDialog(
-              context: scaffoldContext,
-              builder: (_) => BillingForm(
-                onSubmit: (newFacture) {
-                  Provider.of<BillingController>(scaffoldContext, listen: false)
-                      .addFacture(newFacture);
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => BillingForm(
+              onSubmit: (newFacture) {
+                Provider.of<BillingController>(context, listen: false)
+                    .addFacture(newFacture);
 
-                  Navigator.pop(scaffoldContext);
+                Navigator.pop(context);
 
-                  ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                    const SnackBar(
-                      content: Text('Facture ajoutée avec succès'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Facture ajoutée avec succès'),
+                    backgroundColor: Colors.green.shade600,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

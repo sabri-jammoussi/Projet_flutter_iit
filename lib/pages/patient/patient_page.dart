@@ -15,60 +15,66 @@ class PatientPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Liste des patients'),
         leading: IconButton(
-         icon: const Icon(Icons.arrow_back),
-         onPressed: () => Navigator.pop(context),
-  ),
-        backgroundColor: Colors.teal,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: Column(
-        children: [
-          // 🔍 Barre de recherche
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Rechercher un patient...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      body: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Column(
+          children: [
+            // 🔍 Barre de recherche
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Rechercher un patient...',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
+                onChanged: controller.search,
               ),
-              onChanged: controller.search,
             ),
-          ),
 
-          // 📋 Liste des patients filtrés
-          Expanded(
-            child: Consumer<PatientController>(
-              builder: (context, controller, _) {
-                final patients = controller.patients;
+            // 📋 Liste des patients filtrés
+            Expanded(
+              child: Consumer<PatientController>(
+                builder: (context, controller, _) {
+                  final patients = controller.patients;
 
-                if (patients.isEmpty) {
-                  return const Center(
-                    child: Text('Aucun patient trouvé'),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: patients.length,
-                  itemBuilder: (context, index) {
-                    final patient = patients[index];
-                    return PatientCard(
-                      patient: patient,
-                      onDelete: () => controller.removePatient(patient),
+                  if (patients.isEmpty) {
+                    return const Center(
+                      child: Text('Aucun patient trouvé'),
                     );
-                  },
-                );
-              },
+                  }
+
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: patients.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final patient = patients[index];
+                      return PatientCard(
+                        patient: patient,
+                        onDelete: () => controller.removePatient(patient),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
 
       // ➕ Bouton d’ajout
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
           showDialog(
             context: context,
