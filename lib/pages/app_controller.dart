@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart'; // ✅ Import nécessaire pour LatLng
 
 class AppController extends GetxController {
+  /// 🎨 Mode thème clair/sombre
   var themeMode = ThemeMode.system.obs;
+
+  /// 🌍 Langue actuelle
   var locale = const Locale('fr', 'FR').obs;
+
+  /// 📍 Position GPS actuelle
   var currentPosition = Rxn<Position>();
+
+  /// 🔁 Stream de position en temps réel (optionnel)
+  Stream<Position>? positionStream;
 
   /// 🌙 Bascule entre clair et sombre
   void toggleTheme() {
@@ -20,7 +29,7 @@ class AppController extends GetxController {
     Get.updateLocale(newLocale);
   }
 
-  /// 📍 Récupérer la position GPS
+  /// 📍 Récupérer la position GPS une fois
   Future<void> fetchLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -56,5 +65,26 @@ class AppController extends GetxController {
     } catch (e) {
       Get.snackbar('Erreur', 'Impossible de récupérer la position');
     }
+  }
+
+  /// 🔁 Suivre la position en temps réel (optionnel)
+  void startTrackingLocation() {
+    positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    );
+
+    positionStream!.listen((Position position) {
+      currentPosition.value = position;
+    });
+  }
+
+  /// 📍 Getter pratique pour récupérer LatLng
+  LatLng? get currentLatLng {
+    final pos = currentPosition.value;
+    if (pos == null) return null;
+    return LatLng(pos.latitude, pos.longitude);
   }
 }

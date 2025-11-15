@@ -14,6 +14,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final AppController appController = Get.find<AppController>();
+  final MapController mapController = MapController();
 
   final List<Map<String, dynamic>> locales = [
     {'name': 'Français', 'locale': const Locale('fr', 'FR')},
@@ -37,16 +38,28 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  void _recenterMap() {
+    final pos = appController.currentPosition.value;
+    if (pos != null) {
+      mapController.move(LatLng(pos.latitude, pos.longitude), 17.0);
+    } else {
+      Get.snackbar('Erreur', 'Position non disponible');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final position = appController.currentPosition.value;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('map'.tr),
         centerTitle: true,
         backgroundColor: Colors.teal,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            tooltip: 'Recentrer',
+            onPressed: _recenterMap,
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.language),
             onSelected: _changeLanguage,
@@ -66,6 +79,7 @@ class _MapScreenState extends State<MapScreen> {
         }
 
         return FlutterMap(
+          mapController: mapController,
           options: MapOptions(
             initialCenter: LatLng(pos.latitude, pos.longitude),
             initialZoom: 17.0,
