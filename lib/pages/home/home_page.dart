@@ -52,12 +52,14 @@ class HomePage extends StatelessWidget {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationHistoryPage()));
             },
           ),
-           IconButton(
-      icon: const Icon(Icons.location_on),
-      onPressed: () {
-        // Ajoute ici ta logique de localisation
-        Get.snackbar('location'.tr, 'Fonction de localisation à implémenter');
-  },),],
+          IconButton(
+  icon: const Icon(Icons.location_on),
+  tooltip: 'Localisation',
+  onPressed: () {
+    Get.find<AppController>().fetchLocation();
+  },
+),
+],
       ),
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,

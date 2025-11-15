@@ -1,3 +1,4 @@
+import 'package:dentiste/maps/maps_page.dart';
 import 'package:dentiste/firebase_options.dart';
 import 'package:dentiste/pages/appointment/appointment_controller.dart';
 import 'package:dentiste/pages/appointment/appointment_page.dart';
@@ -89,6 +90,7 @@ class _MyAppState extends State<MyApp> {
     '/parametre': (context) => Parametre(),
     '/notifications': (context) => const NotificationHistoryPage(),
     '/splash': (context) => const SplashScreen(),
+    '/maps': (context) =>  MapScreen(),
   };
 
   @override

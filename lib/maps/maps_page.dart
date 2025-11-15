@@ -1,3 +1,4 @@
+import 'package:dentiste/pages/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,8 @@ class MapScreen extends StatelessWidget {
     {'name': 'Français', 'locale': Locale('fr', 'FR')},
     {'name': 'Arabe', 'locale': Locale('ar', 'TU')},
   ];
+  final position = Get.find<AppController>().currentPosition.value;
+
   void _changeLanguage(String language) {
     var selectedLocale = locales.firstWhere(
           (element) => element['name'] == language,
