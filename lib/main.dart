@@ -1,3 +1,14 @@
+import 'package:dentiste/firebase_options.dart';
+import 'package:dentiste/pages/appointment/appointment_controller.dart';
+import 'package:dentiste/pages/appointment/appointment_page.dart';
+import 'package:dentiste/pages/authentification/singup_page.dart';
+import 'package:dentiste/pages/billing/billing_page.dart';
+import 'package:dentiste/pages/parametre/parametre_controller.dart';
+import 'package:dentiste/pages/parametre/parametre_page.dart';
+import 'package:dentiste/pages/patient/patient_page.dart';
+import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
+import 'package:dentiste/pages/statistics/statistics_page.dart';
+import 'package:dentiste/translations/LocaleString.dart';
 import 'package:dentiste/pages/app_controller.dart';
 import 'package:dentiste/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +49,23 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+
+        ChangeNotifierProvider(
+          create: (_) => PatientController()..loadPatients(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BillingController()..loadFactures(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) =>
+              AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
+        ),
+        ChangeNotifierProvider(
+            create: (_) => ProfileController()..initProfile())
+
         ChangeNotifierProvider(create: (_) => PatientController()..loadPatients()),
         ChangeNotifierProvider(create: (_) => BillingController()),
         ChangeNotifierProvider(create: (_) => AppointmentController()..loadAppointments()),
-
       ],
       child: const MyApp(),
     ),
@@ -65,9 +89,9 @@ class _MyAppState extends State<MyApp> {
     '/facturation': (context) => BillingPage(),
     '/statistiques': (context) => StatisticsPage(),
     '/scanFacture': (context) => RecognitionPage(),
+    '/parametre': (context) => Parametre()
     '/notifications': (context) => const NotificationHistoryPage(),
     '/splash': (context) => const SplashScreen(),
-
   };
 
   @override
