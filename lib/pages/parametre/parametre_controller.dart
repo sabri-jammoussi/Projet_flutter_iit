@@ -35,6 +35,7 @@ class ProfileController with ChangeNotifier {
   // Initialize from current user
   Future<void> initProfile() async {
     final user = _auth.currentUser;
+    _imageUrl = null;
     if (user != null) {
       _email = user.email;
 

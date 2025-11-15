@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 class LocalString extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-        'en_FR': {
+        'fr': {
           'maps': 'Accédez à Cartes',
           'map': 'Maps',
           'fr': 'Francais',
@@ -25,7 +25,7 @@ class LocalString extends Translations {
           'settings': 'Paramètres',
           'logout': 'Déconnexion',
         },
-        'en_US': {
+        'en': {
           'maps': 'Go to Maps',
           'map': 'Maps',
           'fr': 'Francais',
@@ -48,7 +48,7 @@ class LocalString extends Translations {
           'settings': 'Settings',
           'logout': 'Logout',
         },
-        'en_AR': {
+        'ar': {
           'maps': 'انتقل إلى الخرائط',
           'map': 'الخريطة',
           'fr': 'اللغه الفرنسيه',
