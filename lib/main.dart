@@ -3,6 +3,8 @@ import 'package:dentiste/pages/appointment/appointment_controller.dart';
 import 'package:dentiste/pages/appointment/appointment_page.dart';
 import 'package:dentiste/pages/authentification/singup_page.dart';
 import 'package:dentiste/pages/billing/billing_page.dart';
+import 'package:dentiste/pages/parametre/parametre_controller.dart';
+import 'package:dentiste/pages/parametre/parametre_page.dart';
 import 'package:dentiste/pages/patient/patient_page.dart';
 import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
 import 'package:dentiste/pages/statistics/statistics_page.dart';
@@ -23,22 +25,24 @@ Future<void> main() async {
   );
 
   runApp(
-  MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (_) => PatientController()..loadPatients(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => BillingController()..loadFactures(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
-      ),
-    ],
-    child: const MyApp(),
-  ),
-);
-
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => PatientController()..loadPatients(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BillingController()..loadFactures(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) =>
+              AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
+        ),
+        ChangeNotifierProvider(
+            create: (_) => ProfileController()..initProfile())
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -63,6 +67,7 @@ class _MyAppState extends State<MyApp> {
     '/facturation': (context) => BillingPage(),
     '/statistiques': (context) => StatisticsPage(),
     '/scanFacture': (context) => RecognitionPage(),
+    '/parametre': (context) => Parametre()
   };
 
   @override

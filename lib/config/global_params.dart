@@ -56,7 +56,7 @@ class GlobalParams {
         Icons.settings,
         color: Colors.teal,
       ),
-      "route": "/parametres"
+      "route": "/parametre"
     },
     {
       "title": "logout",
