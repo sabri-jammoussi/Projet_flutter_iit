@@ -4,21 +4,44 @@ import 'package:dentiste/pages/patient/widgets/patient_card.dart';
 import 'package:dentiste/pages/patient/widgets/patient_form.dart';
 import 'package:dentiste/pages/patient/patient_controller.dart';
 
-class PatientPage extends StatelessWidget {
+class PatientPage extends StatefulWidget {
   const PatientPage({Key? key}) : super(key: key);
 
+  @override
+  State<PatientPage> createState() => _PatientPageState();
+}
+
+class _PatientPageState extends State<PatientPage> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<PatientController>(context);
 
     return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('Liste des patients'),
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      // ),
       appBar: AppBar(
-        title: const Text('Liste des patients'),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).appBarTheme.foregroundColor,
           onPressed: () => Navigator.pop(context),
         ),
+        title: Text(
+          'Liste des patients',
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
+        centerTitle: true,
+
       ),
+
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
@@ -54,7 +77,8 @@ class PatientPage extends StatelessWidget {
                   }
 
                   return ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: patients.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:dentiste/pages/billing/widgets/billing_card.dart';
 import 'package:dentiste/pages/billing/widgets/billing_form.dart';
@@ -12,7 +13,19 @@ class BillingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Facturation'),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).appBarTheme.foregroundColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Facturation'.tr,
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Consumer<BillingController>(
@@ -30,7 +43,7 @@ class BillingPage extends StatelessWidget {
 
           return Column(
             children: [
-               BillingSummary(),
+              BillingSummary(),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.separated(

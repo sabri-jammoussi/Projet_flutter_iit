@@ -5,7 +5,8 @@ class NotificationHistoryPage extends StatefulWidget {
   const NotificationHistoryPage({super.key});
 
   @override
-  State<NotificationHistoryPage> createState() => _NotificationHistoryPageState();
+  State<NotificationHistoryPage> createState() =>
+      _NotificationHistoryPageState();
 }
 
 class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
@@ -28,14 +29,29 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Historique des notifications'),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).appBarTheme.foregroundColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          "Historique des notifications",
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         centerTitle: true,
       ),
       body: notifications.isEmpty
           ? Center(
               child: Text(
                 'Aucune notification enregistrée.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.grey),
               ),
             )
           : ListView.separated(
@@ -45,11 +61,14 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
               itemBuilder: (context, index) {
                 return Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                      child: Icon(Icons.notifications, color: Theme.of(context).primaryColor),
+                      backgroundColor:
+                          Theme.of(context).primaryColor.withOpacity(0.1),
+                      child: Icon(Icons.notifications,
+                          color: Theme.of(context).primaryColor),
                     ),
                     title: Text(
                       notifications[index],

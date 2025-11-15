@@ -23,7 +23,19 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointments'.tr),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).appBarTheme.foregroundColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Appointments'.tr,
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -44,11 +56,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       itemCount: appointments.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
-                        return AppointmentTile(appointment: appointments[index]);
+                        return AppointmentTile(
+                            appointment: appointments[index]);
                       },
                     ),
             ),

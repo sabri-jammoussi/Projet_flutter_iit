@@ -16,7 +16,7 @@ class StatSummary extends StatelessWidget {
           stream: FirebaseFirestore.instance.collection('patients').snapshots(),
           formatter: (snapshot) => '${snapshot.size}',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 0),
         _buildStatCard(
           context,
           icon: Icons.event,
@@ -28,7 +28,7 @@ class StatSummary extends StatelessWidget {
               .snapshots(),
           formatter: (snapshot) => '${snapshot.size}',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 0),
         _buildStatCard(
           context,
           icon: Icons.receipt_long,
@@ -40,7 +40,7 @@ class StatSummary extends StatelessWidget {
               .snapshots(),
           formatter: (snapshot) => '${snapshot.size}',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 0),
         _buildStatCard(
           context,
           icon: Icons.attach_money,
@@ -80,20 +80,27 @@ class StatSummary extends StatelessWidget {
         final value = snapshot.hasData ? formatter(snapshot.data!) : '...';
         return Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
               child: Icon(icon, color: Theme.of(context).primaryColor),
             ),
             title: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-            trailing: Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            trailing: Text(value,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
           ),
         );
       },
     );
   }
 
-  Timestamp _startOfMonth() => Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month));
-  Timestamp _endOfMonth() => Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month + 1));
+  Timestamp _startOfMonth() =>
+      Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month));
+  Timestamp _endOfMonth() =>
+      Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month + 1));
 }

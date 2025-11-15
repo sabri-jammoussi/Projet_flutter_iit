@@ -92,13 +92,40 @@ class _RecognitionPageState extends State<RecognitionPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Scan Facture"),
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            "Scan Facture",
+            style: TextStyle(
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
+          ),
           centerTitle: true,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: "Texte complet"),
-              Tab(text: "Vue grille"),
-            ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: Theme.of(context).colorScheme.copyWith(
+                      secondary: Theme.of(context).primaryColor,
+                    ),
+                tabBarTheme: TabBarTheme(
+                  labelColor: Theme.of(context).primaryColor,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Theme.of(context).primaryColor,
+                ),
+              ),
+              child: const TabBar(
+                tabs: [
+                  Tab(text: "Texte complet"),
+                  Tab(text: "Vue grille"),
+                ],
+              ),
+            ),
           ),
         ),
         body: TabBarView(
@@ -113,7 +140,8 @@ class _RecognitionPageState extends State<RecognitionPage> {
                     label: const Text("Choisir une image"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _showImageSourceDialog,
                   ),
@@ -142,7 +170,8 @@ class _RecognitionPageState extends State<RecognitionPage> {
                     label: const Text("Choisir une image"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _showImageSourceDialog,
                   ),
@@ -151,7 +180,8 @@ class _RecognitionPageState extends State<RecognitionPage> {
                   Container(
                     height: 200,
                     width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(capturedImage!, fit: BoxFit.cover),
@@ -163,12 +193,16 @@ class _RecognitionPageState extends State<RecognitionPage> {
                           child: Text(
                             "Aucun élément détecté.\nPrenez une photo pour voir la grille.",
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.grey),
                           ),
                         )
                       : GridView.builder(
                           padding: const EdgeInsets.all(16),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
@@ -181,7 +215,8 @@ class _RecognitionPageState extends State<RecognitionPage> {
                               elevation: 3,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Theme.of(context).primaryColor),
+                                side: BorderSide(
+                                    color: Theme.of(context).primaryColor),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
@@ -190,14 +225,21 @@ class _RecognitionPageState extends State<RecognitionPage> {
                                   children: [
                                     Text(
                                       element.text,
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w600),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const Spacer(),
                                     Text(
                                       'Confiance : ${(element.confidence! * 100).toStringAsFixed(1)}%',
-                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(color: Colors.grey[600]),
                                     ),
                                   ],
                                 ),
