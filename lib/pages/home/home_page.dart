@@ -1,3 +1,4 @@
+import 'package:dentiste/config/global_params.dart';
 import 'package:dentiste/pages/app_controller.dart';
 import 'package:dentiste/pages/parametre/parametre_controller.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,16 @@ import '../../pages/statistics/statistics_page.dart';
 import '../../pages/scanFacture/scanFacture_page.dart';
 import '../../pages/notification/notification_history_page.dart';
 
-class HomePage extends StatelessWidget {
-  final user = FirebaseAuth.instance.currentUser;
-
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final user = FirebaseAuth.instance.currentUser;
+  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -88,20 +94,6 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: ListView(
               children: [
-                // Card(
-                //   elevation: 2,
-                //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                //   child: ListTile(
-                //     leading: const CircleAvatar(
-                //       backgroundImage: AssetImage('assets/images/dentist.png'),
-                //       radius: 24,
-                //     ),
-                //     title: Text('welcome_doctor'.tr,
-                //         style: Theme.of(context).textTheme.titleLarge),
-                //     subtitle: Text(user?.email ?? '',
-                //         style: Theme.of(context).textTheme.bodyMedium),
-                //   ),
-                // ),
                 Card(
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -149,8 +141,9 @@ class HomePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 CarouselSlider(
                   options: CarouselOptions(
-                    height: 120,
+                    height: 130,
                     enlargeCenterPage: true,
+                    enableInfiniteScroll: true,
                     autoPlay: true,
                     viewportFraction: 0.45,
                   ),
@@ -173,12 +166,19 @@ class HomePage extends StatelessWidget {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            currentIndex: 0,
+            currentIndex: _currentIndex,
             selectedItemColor: Theme.of(context).primaryColor,
             unselectedItemColor: Colors.grey,
             type: BottomNavigationBarType.fixed,
             onTap: (index) {
-              // Navigation logic ici si besoin
+              setState(() {
+                _currentIndex = index;
+              });
+
+              final route = GlobalParams.menus[index]["route"];
+              if (route != "/home") {
+                Navigator.pushNamed(context, route);
+              }
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
@@ -227,7 +227,8 @@ class HomePage extends StatelessWidget {
   Widget _buildQuickButton(
       BuildContext context, IconData icon, String label, Widget page) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
+
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () =>
@@ -239,7 +240,10 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 32, color: Theme.of(context).primaryColor),
-              const SizedBox(height: 8),
+              const SizedBox(
+                height: 8,
+                width: 150,
+              ),
               Text(label,
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500)),

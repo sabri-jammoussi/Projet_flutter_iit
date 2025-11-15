@@ -43,6 +43,14 @@ class GlobalParams {
       "route": "/statistiques"
     },
     {
+      "title": "Notification",
+      "icon": Icon(
+        Icons.notifications,
+        color: Colors.teal,
+      ),
+      "route": "/notifications"
+    },
+    {
       "title": "mlkit",
       "icon": Icon(
         Icons.contact_page,

@@ -19,7 +19,19 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📊 Statistiques du cabinet'),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).appBarTheme.foregroundColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          '📊 Statistiques du cabinet',
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -29,15 +41,20 @@ class _StatisticsPageState extends State<StatisticsPage> {
             // Sélecteur de mois
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Mois sélectionné : ${DateFormat.yMMMM('fr_FR').format(selectedMonth)}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     TextButton.icon(
                       icon: const Icon(Icons.calendar_today),
@@ -61,17 +78,18 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 0),
             // Résumé des statistiques
             StatSummary(selectedMonth: selectedMonth),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
             // Graphique des revenus
             Expanded(
               child: Card(
                 elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(6),
                   child: ChartWidget(selectedYear: selectedYear),
                 ),
               ),
