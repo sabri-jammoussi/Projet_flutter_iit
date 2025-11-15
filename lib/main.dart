@@ -1,3 +1,4 @@
+import 'package:dentiste/maps/maps_page.dart';
 import 'package:dentiste/pages/app_controller.dart';
 import 'package:dentiste/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,8 @@ class _MyAppState extends State<MyApp> {
     '/scanFacture': (context) => RecognitionPage(),
     '/notifications': (context) => const NotificationHistoryPage(),
     '/splash': (context) => const SplashScreen(),
+    '/maps': (context) =>  MapScreen(),
+
 
   };
 
