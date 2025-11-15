@@ -11,9 +11,9 @@ class RecognitionPage extends StatefulWidget {
 }
 
 class _RecognitionPageState extends State<RecognitionPage> {
-  String recognizedText = ""; // result text
-  List<TextElement> textElements = []; // individual text elements
-  File? capturedImage; // store the captured image
+  String recognizedText = "";
+  List<TextElement> textElements = [];
+  File? capturedImage;
   final ImagePicker picker = ImagePicker();
 
   Future<void> _pickImage(bool fromCamera) async {
@@ -21,7 +21,6 @@ class _RecognitionPageState extends State<RecognitionPage> {
       source: fromCamera ? ImageSource.camera : ImageSource.gallery,
       imageQuality: 80,
     );
-
     if (pickedFile == null) return;
 
     final imageFile = File(pickedFile.path);
@@ -31,16 +30,12 @@ class _RecognitionPageState extends State<RecognitionPage> {
   Future<void> _recognizeText(File image) async {
     final inputImage = InputImage.fromFile(image);
     final textRecognizer = TextRecognizer();
+    final result = await textRecognizer.processImage(inputImage);
 
-    final RecognizedText result = await textRecognizer.processImage(inputImage);
-
-    // Store individual text elements
     List<TextElement> elements = [];
-    for (TextBlock block in result.blocks) {
-      for (TextLine line in block.lines) {
-        for (TextElement element in line.elements) {
-          elements.add(element);
-        }
+    for (final block in result.blocks) {
+      for (final line in block.lines) {
+        elements.addAll(line.elements);
       }
     }
 
@@ -56,30 +51,38 @@ class _RecognitionPageState extends State<RecognitionPage> {
   void _showImageSourceDialog() {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Choose Image Source"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _pickImage(true);
-                },
-                child: const Text("Take Photo"),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Choisir une image"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.camera_alt),
+              label: const Text("Prendre une photo"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _pickImage(false);
-                },
-                child: const Text("Pick from Gallery"),
+              onPressed: () {
+                Navigator.pop(context);
+                _pickImage(true);
+              },
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.photo_library),
+              label: const Text("Depuis la galerie"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
               ),
-            ],
-          ),
-        );
-      },
+              onPressed: () {
+                Navigator.pop(context);
+                _pickImage(false);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -89,81 +92,83 @@ class _RecognitionPageState extends State<RecognitionPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Text Recognition"),
-          bottom: TabBar(
-            tabs: const [
-              Tab(text: "Full Text"),
-              Tab(text: "Grid View"),
+          title: const Text("Scan Facture"),
+          centerTitle: true,
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: "Texte complet"),
+              Tab(text: "Vue grille"),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            // Full text view
+            // Vue texte complet
             Column(
               children: [
-                // Main button
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
+                  padding: const EdgeInsets.all(16),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.image_search),
+                    label: const Text("Choisir une image"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                     onPressed: _showImageSourceDialog,
-                    child: const Text("Choose Image"),
                   ),
                 ),
-                // Display recognized text
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
                     child: Text(
                       recognizedText.isEmpty
-                          ? "No text recognized yet."
+                          ? "Aucun texte reconnu pour le moment."
                           : recognizedText,
-                      style: const TextStyle(fontSize: 16),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                )
+                ),
               ],
             ),
-            // Grid view
+
+            // Vue grille
             Column(
               children: [
-                // Main button
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
+                  padding: const EdgeInsets.all(16),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.image_search),
+                    label: const Text("Choisir une image"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                     onPressed: _showImageSourceDialog,
-                    child: const Text("Choose Image"),
                   ),
                 ),
-                // Image preview
                 if (capturedImage != null)
                   Container(
                     height: 200,
                     width: double.infinity,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        capturedImage!,
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.file(capturedImage!, fit: BoxFit.cover),
                     ),
                   ),
-                // Grid of text elements
                 Expanded(
                   child: textElements.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            "No text elements found.\nTake a photo to see grid view.",
+                            "Aucun élément détecté.\nPrenez une photo pour voir la grille.",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                           ),
                         )
                       : GridView.builder(
                           padding: const EdgeInsets.all(16),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
@@ -175,33 +180,24 @@ class _RecognitionPageState extends State<RecognitionPage> {
                             return Card(
                               elevation: 3,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1,
-                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Theme.of(context).primaryColor),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       element.text,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const Spacer(),
                                     Text(
-                                      'Confidence: ${(element.confidence! * 100).toStringAsFixed(1)}%',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey[600],
-                                      ),
+                                      'Confiance : ${(element.confidence! * 100).toStringAsFixed(1)}%',
+                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
                                     ),
                                   ],
                                 ),
