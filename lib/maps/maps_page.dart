@@ -2,59 +2,102 @@ import 'package:dentiste/pages/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MapScreen extends StatelessWidget {
-  List<String> languages = ["Français", "Anglais", "Arabe"];
-  final List locales = [
-    {'name': 'Anglais', 'locale': Locale('en', 'US')},
-    {'name': 'Français', 'locale': Locale('fr', 'FR')},
-    {'name': 'Arabe', 'locale': Locale('ar', 'TU')},
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  final AppController appController = Get.find<AppController>();
+
+  final List<Map<String, dynamic>> locales = [
+    {'name': 'Français', 'locale': const Locale('fr', 'FR')},
+    {'name': 'Anglais', 'locale': const Locale('en', 'US')},
+    {'name': 'Arabe', 'locale': const Locale('ar', 'TU')},
   ];
-  final position = Get.find<AppController>().currentPosition.value;
+
+  @override
+  void initState() {
+    super.initState();
+    appController.fetchLocation(); // 🔄 Récupère la position GPS
+  }
 
   void _changeLanguage(String language) {
-    var selectedLocale = locales.firstWhere(
-          (element) => element['name'] == language,
-      orElse: () => null,
+    final selected = locales.firstWhere(
+      (element) => element['name'] == language,
+      orElse: () => {},
     );
-
-    if (selectedLocale != null) {
-      Get.updateLocale(selectedLocale['locale']);
+    if (selected.isNotEmpty) {
+      Get.updateLocale(selected['locale']);
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final position = appController.currentPosition.value;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('map'.tr),
         centerTitle: true,
         backgroundColor: Colors.teal,
-      ),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: LatLng(34.784376,10.733741),
-          initialZoom: 17.0,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-          ),
-          RichAttributionWidget(
-            attributions: [
-              TextSourceAttribution(
-                'OpenStreetMap contributors',
-                onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
-              ),
-            ],
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.language),
+            onSelected: _changeLanguage,
+            itemBuilder: (context) => locales
+                .map((e) => PopupMenuItem<String>(
+                      value: e['name'],
+                      child: Text(e['name']),
+                    ))
+                .toList(),
           ),
         ],
       ),
+      body: Obx(() {
+        final pos = appController.currentPosition.value;
+        if (pos == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return FlutterMap(
+          options: MapOptions(
+            initialCenter: LatLng(pos.latitude, pos.longitude),
+            initialZoom: 17.0,
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: ['a', 'b', 'c'],
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: LatLng(pos.latitude, pos.longitude),
+                  width: 40,
+                  height: 40,
+                  child: const Icon(Icons.location_pin, color: Colors.red, size: 40),
+                ),
+              ],
+            ),
+            RichAttributionWidget(
+              attributions: [
+                TextSourceAttribution(
+                  'OpenStreetMap contributors',
+                  onTap: () => launchUrl(
+                    Uri.parse('https://openstreetmap.org/copyright'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
     );
   }
 }
