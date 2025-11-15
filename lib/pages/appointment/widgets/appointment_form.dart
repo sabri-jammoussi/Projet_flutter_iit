@@ -20,6 +20,13 @@ class _AppointmentFormState extends State<AppointmentForm> {
   DateTime selectedDateTime = DateTime.now();
   String reason = '';
   AppointmentStatus selectedStatus = AppointmentStatus.pending;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedPatient = widget.patient;
+  }
+
   String _statusLabel(AppointmentStatus status) {
     switch (status) {
       case AppointmentStatus.confirmed:
@@ -32,18 +39,18 @@ class _AppointmentFormState extends State<AppointmentForm> {
         return 'En attente';
     }
   }
-  @override
-  void initState() {
-    super.initState();
-    selectedPatient = widget.patient;
-  }
 
   @override
   Widget build(BuildContext context) {
     final patients = Provider.of<PatientController>(context).patients;
 
     return AlertDialog(
-      title: const Text('New Appointment'),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Theme.of(context).cardColor,
+      title: Text(
+        'Nouveau rendez-vous',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -51,33 +58,42 @@ class _AppointmentFormState extends State<AppointmentForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<Patient>(
-                decoration: const InputDecoration(labelText: 'Patient'),
+                decoration: _inputDecoration(context, 'Patient'),
                 value: selectedPatient,
-                items: patients.map((p) => DropdownMenuItem(value: p, child: Text(p.nom))).toList(),
+                items: patients
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p.nom)))
+                    .toList(),
                 onChanged: widget.patient == null
                     ? (value) => setState(() => selectedPatient = value)
                     : null,
-                validator: (value) => value == null ? 'Select a patient' : null,
+                validator: (value) =>
+                    value == null ? 'Veuillez sélectionner un patient' : null,
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Reason'),
-                onSaved: (value) => reason = value ?? '',
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-              ),
-              DropdownButtonFormField<AppointmentStatus>(
-  decoration: const InputDecoration(labelText: 'Statut'),
-  value: selectedStatus,
-  items: AppointmentStatus.values.map((status) {
-    return DropdownMenuItem(
-      value: status,
-      child: Text(_statusLabel(status)),
-    );
-  }).toList(),
-  onChanged: (value) => setState(() => selectedStatus = value!),
-),
-
               const SizedBox(height: 12),
-              ElevatedButton(
+              TextFormField(
+                decoration: _inputDecoration(context, 'Motif'),
+                onSaved: (value) => reason = value ?? '',
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Champ requis' : null,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<AppointmentStatus>(
+                decoration: _inputDecoration(context, 'Statut'),
+                value: selectedStatus,
+                items: AppointmentStatus.values.map((status) {
+                  return DropdownMenuItem(
+                    value: status,
+                    child: Text(_statusLabel(status)),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => selectedStatus = value!),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.calendar_today),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
                 onPressed: () async {
                   final pickedDate = await showDatePicker(
                     context: context,
@@ -103,8 +119,8 @@ class _AppointmentFormState extends State<AppointmentForm> {
                     }
                   }
                 },
-                child: Text(
-                  'Date: ${selectedDateTime.day.toString().padLeft(2, '0')}/'
+                label: Text(
+                  'Date : ${selectedDateTime.day.toString().padLeft(2, '0')}/'
                   '${selectedDateTime.month.toString().padLeft(2, '0')}/'
                   '${selectedDateTime.year} '
                   '${selectedDateTime.hour.toString().padLeft(2, '0')}:'
@@ -123,15 +139,28 @@ class _AppointmentFormState extends State<AppointmentForm> {
               widget.onSubmit(Appointment(
                 patient: selectedPatient!,
                 dateTime: selectedDateTime,
-                status: AppointmentStatus.pending,
+                status: selectedStatus,
+                
               ));
               Navigator.pop(context);
             }
           },
-          child: const Text('Add'),
+          child: Text('Ajouter', style: TextStyle(color: Theme.of(context).primaryColor)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annuler', style: TextStyle(color: Colors.grey)),
         ),
       ],
     );
   }
-  
+
+  InputDecoration _inputDecoration(BuildContext context, String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: Colors.grey.shade100,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    );
+  }
 }
