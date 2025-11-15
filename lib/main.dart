@@ -49,23 +49,20 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-
         ChangeNotifierProvider(
           create: (_) => PatientController()..loadPatients(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => BillingController()..loadFactures(),
         ),
         ChangeNotifierProvider(
           create: (_) =>
               AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
         ),
         ChangeNotifierProvider(
-            create: (_) => ProfileController()..initProfile())
-
-        ChangeNotifierProvider(create: (_) => PatientController()..loadPatients()),
+            create: (_) => ProfileController()..initProfile()),
+        ChangeNotifierProvider(
+            create: (_) => PatientController()..loadPatients()),
         ChangeNotifierProvider(create: (_) => BillingController()),
-        ChangeNotifierProvider(create: (_) => AppointmentController()..loadAppointments()),
+        ChangeNotifierProvider(
+            create: (_) => AppointmentController()..loadAppointments()),
       ],
       child: const MyApp(),
     ),
@@ -89,7 +86,7 @@ class _MyAppState extends State<MyApp> {
     '/facturation': (context) => BillingPage(),
     '/statistiques': (context) => StatisticsPage(),
     '/scanFacture': (context) => RecognitionPage(),
-    '/parametre': (context) => Parametre()
+    '/parametre': (context) => Parametre(),
     '/notifications': (context) => const NotificationHistoryPage(),
     '/splash': (context) => const SplashScreen(),
   };
@@ -116,11 +113,11 @@ class _MyAppState extends State<MyApp> {
         elevation: 0,
         titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
-      cardTheme:  CardThemeData(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-        color: Colors.white,
-      ),
+     cardTheme:  const CardTheme(
+       elevation: 4,
+       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+       color: Colors.white,
+     ),
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         bodyMedium: TextStyle(fontSize: 14, color: Colors.black87),
@@ -141,7 +138,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/splash',
       theme: dentalTheme,
       darkTheme: ThemeData.dark(),
-      themeMode:  Get.find<AppController>().themeMode.value,
+      themeMode: Get.find<AppController>().themeMode.value,
       routes: routes,
     );
   }
