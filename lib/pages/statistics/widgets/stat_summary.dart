@@ -8,65 +8,92 @@ class StatSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildStatTile('👥 Patients', FirebaseFirestore.instance.collection('patients')),
-        _buildMonthlyStatTile('📅 Rendez-vous', FirebaseFirestore.instance.collection('appointments')),
-        _buildMonthlyStatTile('💳 Factures', FirebaseFirestore.instance.collection('factures')),
-        _buildMonthlyRevenueTile(),
+        _buildStatCard(
+          context,
+          icon: Icons.people,
+          label: 'Patients',
+          stream: FirebaseFirestore.instance.collection('patients').snapshots(),
+          formatter: (snapshot) => '${snapshot.size}',
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          context,
+          icon: Icons.event,
+          label: 'Rendez-vous (ce mois)',
+          stream: FirebaseFirestore.instance
+              .collection('appointments')
+              .where('dateTime', isGreaterThanOrEqualTo: _startOfMonth())
+              .where('dateTime', isLessThan: _endOfMonth())
+              .snapshots(),
+          formatter: (snapshot) => '${snapshot.size}',
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          context,
+          icon: Icons.receipt_long,
+          label: 'Factures (ce mois)',
+          stream: FirebaseFirestore.instance
+              .collection('factures')
+              .where('dateTime', isGreaterThanOrEqualTo: _startOfMonth())
+              .where('dateTime', isLessThan: _endOfMonth())
+              .snapshots(),
+          formatter: (snapshot) => '${snapshot.size}',
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          context,
+          icon: Icons.attach_money,
+          label: 'Revenu (ce mois)',
+          stream: FirebaseFirestore.instance
+              .collection('factures')
+              .where('dateTime', isGreaterThanOrEqualTo: _startOfMonth())
+              .where('dateTime', isLessThan: _endOfMonth())
+              .snapshots(),
+          formatter: (snapshot) {
+            double total = 0.0;
+            for (var doc in snapshot.docs) {
+              final montant = doc['montantPaye'];
+              if (montant is num) {
+                total += montant.toDouble();
+              } else if (montant is String) {
+                total += double.tryParse(montant) ?? 0.0;
+              }
+            }
+            return '${total.toStringAsFixed(2)} TND';
+          },
+        ),
       ],
     );
   }
 
-  Widget _buildStatTile(String label, CollectionReference collection) {
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Stream<QuerySnapshot> stream,
+    required String Function(QuerySnapshot) formatter,
+  }) {
     return StreamBuilder<QuerySnapshot>(
-      stream: collection.snapshots(),
+      stream: stream,
       builder: (context, snapshot) {
-        final count = snapshot.data?.size ?? 0;
-        return Text('$label : $count', style: const TextStyle(fontSize: 16));
+        final value = snapshot.hasData ? formatter(snapshot.data!) : '...';
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+              child: Icon(icon, color: Theme.of(context).primaryColor),
+            ),
+            title: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+            trailing: Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildMonthlyStatTile(String label, CollectionReference collection) {
-    final start = Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month));
-    final end = Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month + 1));
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: collection
-          .where('dateTime', isGreaterThanOrEqualTo: start)
-          .where('dateTime', isLessThan: end)
-          .snapshots(),
-      builder: (context, snapshot) {
-        final count = snapshot.data?.size ?? 0;
-        return Text('$label (ce mois) : $count', style: const TextStyle(fontSize: 16));
-      },
-    );
-  }
-
-  Widget _buildMonthlyRevenueTile() {
-    final start = Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month));
-    final end = Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month + 1));
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('factures')
-          .where('dateTime', isGreaterThanOrEqualTo: start)
-          .where('dateTime', isLessThan: end)
-          .snapshots(),
-      builder: (context, snapshot) {
-        double total = 0.0;
-        if (snapshot.hasData) {
-          for (var doc in snapshot.data!.docs) {
-            final montant = doc['montantPaye'];
-            if (montant is num) {
-              total += montant.toDouble();
-            }
-          }
-        }
-        return Text('💰 Revenu (ce mois) : ${total.toStringAsFixed(2)} TND',
-            style: const TextStyle(fontSize: 16));
-      },
-    );
-  }
+  Timestamp _startOfMonth() => Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month));
+  Timestamp _endOfMonth() => Timestamp.fromDate(DateTime(selectedMonth.year, selectedMonth.month + 1));
 }

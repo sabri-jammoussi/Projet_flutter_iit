@@ -21,38 +21,52 @@ class PatientDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fiche de ${patient.nom}'),
-        backgroundColor: Colors.teal,
+        centerTitle: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Infos du patient
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Nom : ${patient.nom}', style: Theme.of(context).textTheme.titleLarge),
-                Text('Email : ${patient.email}'),
-                Text('Âge : ${patient.age} ans'),
-              ],
+      body: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/images/dentist.png'),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(patient.nom,
+                              style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: 4),
+                          Text('Email : ${patient.email}',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text('Âge : ${patient.age} ans',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-
-          const Divider(),
-
-          // Historique de paiement
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('Historique de paiement',
+            const SizedBox(height: 24),
+            Text('Historique de paiement',
                 style: Theme.of(context).textTheme.titleMedium),
-          ),
-          SizedBox(
-            height: 200,
-            child: factures.isEmpty
+            const SizedBox(height: 8),
+            factures.isEmpty
                 ? const Center(child: Text('Aucune facture pour ce patient.'))
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: factures.length,
                     itemBuilder: (context, index) {
                       return BillingCard(
@@ -62,43 +76,38 @@ class PatientDetailsPage extends StatelessWidget {
                       );
                     },
                   ),
-          ),
-
-          const Divider(),
-
-          // Appointments
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('Rendez-vous',
+            const SizedBox(height: 24),
+            Text('Rendez-vous',
                 style: Theme.of(context).textTheme.titleMedium),
-          ),
-          SizedBox(
-            height: 200,
-            child: appointments.isEmpty
+            const SizedBox(height: 8),
+            appointments.isEmpty
                 ? const Center(child: Text('Aucun rendez-vous pour ce patient.'))
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: appointments.length,
                     itemBuilder: (context, index) {
                       return AppointmentTile(appointment: appointments[index]);
                     },
                   ),
-          ),
-        ],
+          ],
+        ),
       ),
-
-      // Bouton flottant avec menu
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet(
             context: context,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
             builder: (_) => Wrap(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.receipt),
-                  title: const Text('Ajouter une facture'),
+                _buildActionTile(
+                  context,
+                  icon: Icons.receipt,
+                  label: 'Ajouter une facture',
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(
@@ -114,9 +123,10 @@ class PatientDetailsPage extends StatelessWidget {
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: const Text('Ajouter un rendez-vous'),
+                _buildActionTile(
+                  context,
+                  icon: Icons.calendar_today,
+                  label: 'Ajouter un rendez-vous',
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(
@@ -132,9 +142,10 @@ class PatientDetailsPage extends StatelessWidget {
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.flash_on),
-                  title: const Text('Facturer automatiquement'),
+                _buildActionTile(
+                  context,
+                  icon: Icons.flash_on,
+                  label: 'Facturer automatiquement',
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(
@@ -158,6 +169,15 @@ class PatientDetailsPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildActionTile(BuildContext context,
+      {required IconData icon, required String label, required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: Theme.of(context).primaryColor),
+      title: Text(label),
+      onTap: onTap,
     );
   }
 }

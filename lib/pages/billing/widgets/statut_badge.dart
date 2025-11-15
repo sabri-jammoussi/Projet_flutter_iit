@@ -9,28 +9,40 @@ class StatutBadge extends StatelessWidget {
   Color get color {
     switch (statut) {
       case StatutPaiement.paye:
-        return Colors.green;
+        return Colors.green.shade600;
       case StatutPaiement.partiel:
-        return Colors.orange;
+        return Colors.orange.shade600;
       case StatutPaiement.impaye:
-        return Colors.red;
+        return Colors.red.shade600;
     }
   }
 
-  String get label => statut.name;
+  String get label {
+    switch (statut) {
+      case StatutPaiement.paye:
+        return 'Payée';
+      case StatutPaiement.partiel:
+        return 'Partielle';
+      case StatutPaiement.impaye:
+        return 'Impayée';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withOpacity(0.15),
         border: Border.all(color: color),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
