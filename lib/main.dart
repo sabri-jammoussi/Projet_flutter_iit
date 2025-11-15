@@ -1,4 +1,15 @@
 import 'package:dentiste/maps/maps_page.dart';
+import 'package:dentiste/firebase_options.dart';
+import 'package:dentiste/pages/appointment/appointment_controller.dart';
+import 'package:dentiste/pages/appointment/appointment_page.dart';
+import 'package:dentiste/pages/authentification/singup_page.dart';
+import 'package:dentiste/pages/billing/billing_page.dart';
+import 'package:dentiste/pages/parametre/parametre_controller.dart';
+import 'package:dentiste/pages/parametre/parametre_page.dart';
+import 'package:dentiste/pages/patient/patient_page.dart';
+import 'package:dentiste/pages/scanFacture/scanFacture_page.dart';
+import 'package:dentiste/pages/statistics/statistics_page.dart';
+import 'package:dentiste/translations/LocaleString.dart';
 import 'package:dentiste/pages/app_controller.dart';
 import 'package:dentiste/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +50,20 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PatientController()..loadPatients()),
+        ChangeNotifierProvider(
+          create: (_) => PatientController()..loadPatients(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) =>
+              AppointmentController()..loadAppointments(), // ✅ AJOUT ICI
+        ),
+        ChangeNotifierProvider(
+            create: (_) => ProfileController()..initProfile()),
+        ChangeNotifierProvider(
+            create: (_) => PatientController()..loadPatients()),
         ChangeNotifierProvider(create: (_) => BillingController()),
-        ChangeNotifierProvider(create: (_) => AppointmentController()..loadAppointments()),
-
+        ChangeNotifierProvider(
+            create: (_) => AppointmentController()..loadAppointments()),
       ],
       child: const MyApp(),
     ),
@@ -66,11 +87,10 @@ class _MyAppState extends State<MyApp> {
     '/facturation': (context) => BillingPage(),
     '/statistiques': (context) => StatisticsPage(),
     '/scanFacture': (context) => RecognitionPage(),
+    '/parametre': (context) => Parametre(),
     '/notifications': (context) => const NotificationHistoryPage(),
     '/splash': (context) => const SplashScreen(),
     '/maps': (context) =>  MapScreen(),
-
-
   };
 
   @override
@@ -95,11 +115,11 @@ class _MyAppState extends State<MyApp> {
         elevation: 0,
         titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
-      cardTheme:  CardThemeData(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-        color: Colors.white,
-      ),
+     cardTheme:  const CardTheme(
+       elevation: 4,
+       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+       color: Colors.white,
+     ),
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         bodyMedium: TextStyle(fontSize: 14, color: Colors.black87),
@@ -120,7 +140,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/splash',
       theme: dentalTheme,
       darkTheme: ThemeData.dark(),
-      themeMode:  Get.find<AppController>().themeMode.value,
+      themeMode: Get.find<AppController>().themeMode.value,
       routes: routes,
     );
   }
