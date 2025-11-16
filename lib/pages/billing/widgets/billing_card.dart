@@ -26,29 +26,43 @@ class BillingCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  backgroundColor:
+                      Theme.of(context).primaryColor.withOpacity(0.1),
                   child: const Icon(Icons.receipt_long, color: Colors.teal),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     facture.patient.nom,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 StatutBadge(statut: facture.statutEnum),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Email : ${facture.patient.email}', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Âge : ${facture.patient.age} ans', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Date : ${facture.date.toLocal().toString().split(' ')[0]}', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Mode de paiement : ${facture.modePaiement}', style: Theme.of(context).textTheme.bodyMedium),
+            Text('Email : ${facture.patient.email}',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text('Âge : ${facture.patient.age} ans',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text('Date : ${facture.date.toLocal().toString().split(' ')[0]}',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text('Mode de paiement : ${facture.modePaiement}',
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 8),
-            Text('Actes : ${facture.actes.map((a) => a.nom).join(', ')}', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Montant total : ${facture.montantTotal.toStringAsFixed(2)} TND', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Montant payé : ${facture.montantPaye.toStringAsFixed(2)} TND', style: Theme.of(context).textTheme.bodyMedium),
-            Text('Reste à payer : ${facture.resteAPayer.toStringAsFixed(2)} TND', style: Theme.of(context).textTheme.bodyMedium),
+            Text('Actes : ${facture.actes.map((a) => a.nom).join(', ')}',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+                'Montant total : ${facture.montantTotal.toStringAsFixed(2)} TND',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text('Montant payé : ${facture.montantPaye.toStringAsFixed(2)} TND',
+                style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+                'Reste à payer : ${facture.resteAPayer.toStringAsFixed(2)} TND',
+                style: Theme.of(context).textTheme.bodyMedium),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -71,8 +85,10 @@ class BillingCard extends StatelessWidget {
                   },
                 ),
                 TextButton.icon(
-                  icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
-                  label: const Text('Supprimer', style: TextStyle(color: Colors.redAccent)),
+                  icon: const Icon(Icons.delete,
+                      size: 18, color: Colors.redAccent),
+                  label: const Text('Supprimer',
+                      style: TextStyle(color: Colors.redAccent)),
                   onPressed: onDelete,
                 ),
               ],

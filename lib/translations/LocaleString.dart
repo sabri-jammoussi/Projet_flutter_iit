@@ -24,6 +24,7 @@ class LocalString extends Translations {
           'choose_language': 'Choisissez votre langue',
           'settings': 'Paramètres',
           'logout': 'Déconnexion',
+          'notification': 'Notifications',
         },
         'en': {
           'maps': 'Go to Maps',
@@ -47,6 +48,7 @@ class LocalString extends Translations {
           'choose_language': 'Choose your language',
           'settings': 'Settings',
           'logout': 'Logout',
+          'notification': 'Notifications',
         },
         'ar': {
           'maps': 'انتقل إلى الخرائط',
@@ -69,6 +71,7 @@ class LocalString extends Translations {
           'choose_language': 'اختر لغتك',
           'settings': 'الإعدادات',
           'logout': 'تسجيل الخروج',
+          'notification': 'الإشعارات',
         },
       };
 }
