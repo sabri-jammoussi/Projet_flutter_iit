@@ -23,7 +23,7 @@ class BillingForm extends StatefulWidget {
 
 class _BillingFormState extends State<BillingForm> {
   final _formKey = GlobalKey<FormState>();
-  Patient? selectedPatient;
+  String? selectedPatientId;
   double montantPaye = 0.0;
   String modePaiement = 'Espèces';
 
@@ -38,7 +38,7 @@ class _BillingFormState extends State<BillingForm> {
   @override
   void initState() {
     super.initState();
-    selectedPatient = widget.facture?.patient ?? widget.patient;
+    selectedPatientId = widget.facture?.patient.id ?? widget.patient?.id;
     montantPaye = widget.facture?.montantPaye ?? 0.0;
     modePaiement = widget.facture?.modePaiement ?? 'Espèces';
     soinsChoisis = widget.facture?.actes ?? [];
@@ -47,7 +47,8 @@ class _BillingFormState extends State<BillingForm> {
   @override
   Widget build(BuildContext context) {
     final patients = Provider.of<PatientController>(context).patients;
-    final montantTotal = soinsChoisis.fold<double>(0.0, (sum, soin) => sum + soin.tarif);
+    final montantTotal =
+        soinsChoisis.fold<double>(0.0, (sum, soin) => sum + soin.tarif);
     final resteAPayer = (montantTotal - montantPaye).clamp(0.0, montantTotal);
 
     return AlertDialog(
@@ -63,30 +64,48 @@ class _BillingFormState extends State<BillingForm> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DropdownButtonFormField<Patient>(
+              DropdownButtonFormField<String>(
                 decoration: _inputDecoration(context, 'Patient'),
-                value: selectedPatient,
+                value: selectedPatientId,
                 items: patients.map((patient) {
                   return DropdownMenuItem(
-                    value: patient,
+                    value: patient.id,
                     child: Text(patient.nom),
                   );
                 }).toList(),
                 onChanged: widget.patient == null && widget.facture == null
-                    ? (value) => setState(() => selectedPatient = value)
+                    ? (value) => setState(() => selectedPatientId = value)
                     : null,
                 validator: (value) =>
                     value == null ? 'Veuillez sélectionner un patient' : null,
               ),
               const SizedBox(height: 12),
+              // DropdownButtonFormField<String>(
+              //   decoration: _inputDecoration(context, 'Mode de paiement'),
+              //   value: modePaiement,
+              //   items: ['Espèces', 'Carte', 'Virement', 'Assurance'].map((m) {
+              //     return DropdownMenuItem(value: m, child: Text(m));
+              //   }).toList(),
+              //   onChanged: (value) => setState(() => modePaiement = value!),
+              // ),
               DropdownButtonFormField<String>(
                 decoration: _inputDecoration(context, 'Mode de paiement'),
-                value: modePaiement,
+                value: ['Espèces', 'Carte', 'Virement', 'Assurance']
+                        .contains(modePaiement)
+                    ? modePaiement
+                    : null,
                 items: ['Espèces', 'Carte', 'Virement', 'Assurance'].map((m) {
-                  return DropdownMenuItem(value: m, child: Text(m));
+                  return DropdownMenuItem(
+                    value: m,
+                    child: Text(m),
+                  );
                 }).toList(),
                 onChanged: (value) => setState(() => modePaiement = value!),
+                validator: (value) => value == null
+                    ? 'Veuillez sélectionner un mode de paiement'
+                    : null,
               ),
+
               const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerLeft,
@@ -96,7 +115,8 @@ class _BillingFormState extends State<BillingForm> {
               const SizedBox(height: 8),
               ...soinsDisponibles.map((soin) {
                 return CheckboxListTile(
-                  title: Text('${soin.nom} - ${soin.tarif.toStringAsFixed(2)} TND'),
+                  title: Text(
+                      '${soin.nom} - ${soin.tarif.toStringAsFixed(2)} TND'),
                   value: soinsChoisis.contains(soin),
                   activeColor: Theme.of(context).primaryColor,
                   onChanged: (selected) {
@@ -142,21 +162,29 @@ class _BillingFormState extends State<BillingForm> {
             if (_formKey.currentState?.validate() ?? false) {
               if (soinsChoisis.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Veuillez sélectionner au moins un soin')),
+                  const SnackBar(
+                      content: Text('Veuillez sélectionner au moins un soin')),
                 );
                 return;
               }
-
+              final selectedPatient = patients.firstWhere(
+                (p) => p.id == selectedPatientId,
+                orElse: () => throw Exception(
+                    'Patient not found'), // or handle gracefully
+              );
               final facture = Facture(
-                id: widget.facture?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                patient: selectedPatient!,
-                date: DateTime.now(),
+                id: widget.facture?.id ??
+                    DateTime.now().millisecondsSinceEpoch.toString(),
+                patient: selectedPatient,
+                date: widget.facture?.date ?? DateTime.now(),
                 actes: soinsChoisis,
                 montantTotal: montantTotal,
                 montantPaye: montantPaye,
                 resteAPayer: resteAPayer,
                 modePaiement: modePaiement,
-                statut: resteAPayer == 0 ? 'payée' : (montantPaye > 0 ? 'partielle' : 'impayée'),
+                statut: resteAPayer == 0
+                    ? 'payée'
+                    : (montantPaye > 0 ? 'partielle' : 'impayée'),
               );
 
               widget.onSubmit(facture);

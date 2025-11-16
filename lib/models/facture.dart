@@ -38,7 +38,7 @@ extension StatutPaiementExtension on StatutPaiement {
 }
 
 class Facture {
-  final String? id;
+  String? id;
   final Patient patient;
   final List<ActeMedical> actes;
   final double montantTotal;
@@ -83,6 +83,7 @@ class Facture {
 
   Map<String, dynamic> toMap() {
     return {
+      //'id': id,
       'patient': patient.toMap(),
       'actes': actes.map((a) => a.toMap()).toList(),
       'montantTotal': montantTotal,

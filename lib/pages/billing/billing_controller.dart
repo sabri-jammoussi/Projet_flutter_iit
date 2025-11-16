@@ -60,7 +60,10 @@ class BillingController extends ChangeNotifier {
 
   /// ➕ Ajouter une facture
   Future<void> addFacture(Facture facture) async {
-    await FirebaseFirestore.instance.collection('factures').add(facture.toMap());
+   // await FirebaseFirestore.instance.collection('factures').add(facture.toMap());
+  final doc = FirebaseFirestore.instance.collection('factures').doc();
+  facture.id = doc.id; // id Firestore réel
+  await doc.set(facture.toMap());
   }
 
   /// ✏️ Modifier une facture

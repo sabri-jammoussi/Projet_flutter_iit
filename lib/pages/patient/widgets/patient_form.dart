@@ -56,8 +56,9 @@ class _PatientFormState extends State<PatientForm> {
                 label: 'Email',
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                    value != null && value.contains('@') ? null : 'Email invalide',
+                validator: (value) => value != null && value.contains('@')
+                    ? null
+                    : 'Email invalide',
                 onSaved: (value) => email = value ?? '',
               ),
             ],
@@ -69,11 +70,13 @@ class _PatientFormState extends State<PatientForm> {
           onPressed: () {
             if (_formKey.currentState?.validate() ?? false) {
               _formKey.currentState?.save();
+
               widget.onSubmit(Patient(nom: nom, age: age, email: email));
               Navigator.pop(context);
             }
           },
-          child: Text('Ajouter', style: TextStyle(color: Theme.of(context).primaryColor)),
+          child: Text('Ajouter',
+              style: TextStyle(color: Theme.of(context).primaryColor)),
         ),
       ],
     );

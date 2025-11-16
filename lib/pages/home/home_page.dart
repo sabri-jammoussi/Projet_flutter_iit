@@ -180,18 +180,19 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pushNamed(context, route);
               }
             },
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+            items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.people), label: 'Patients'),
+                  icon: Icon(Icons.home), label: 'dashboard'.tr),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_today), label: 'RDV'),
+                  icon: Icon(Icons.people), label: 'patients'.tr),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.receipt), label: 'Factures'),
+                  icon: Icon(Icons.calendar_today), label: 'appointments'.tr),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.bar_chart), label: 'Stats'),
+                  icon: Icon(Icons.receipt), label: 'billing'.tr),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.notifications), label: 'Notifications'),
+                  icon: Icon(Icons.bar_chart), label: 'statistics'.tr),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications), label: 'notification'.tr),
             ],
           ),
         );
@@ -228,7 +229,6 @@ class _HomePageState extends State<HomePage> {
       BuildContext context, IconData icon, String label, Widget page) {
     return Material(
       color: Theme.of(context).cardColor,
-
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () =>

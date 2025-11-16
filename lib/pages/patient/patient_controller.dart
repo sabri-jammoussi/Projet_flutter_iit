@@ -19,6 +19,7 @@ class PatientController extends ChangeNotifier {
       for (var doc in snapshot.docs) {
         final data = doc.data();
         _allPatients.add(Patient(
+          id: doc.id, // 🔹 store Firestore document ID
           nom: data['nom'] ?? '',
           age: data['age'] ?? 0,
           email: data['email'] ?? '',
@@ -33,36 +34,51 @@ class PatientController extends ChangeNotifier {
   }
 
   /// Add a patient to Firestore
-  Future<void> addPatient(Patient patient) async {
+  Future<Patient?> addPatient(Patient patient) async {
     try {
       final docRef = await _firestore.collection('patients').add({
         'nom': patient.nom,
         'age': patient.age,
         'email': patient.email,
       });
-      print("Patient added with ID: ${docRef.id}");
 
-      _allPatients.add(patient);
+      final newPatient = Patient(
+        id: docRef.id,
+        nom: patient.nom,
+        age: patient.age,
+        email: patient.email,
+      );
+
+      _allPatients.add(newPatient);
       _filteredPatients = List.from(_allPatients);
       notifyListeners();
+
+      print("Patient added with ID: ${docRef.id}");
+      return newPatient; // ✅ return the patient with ID
     } catch (e) {
       print("Error adding patient: $e");
+      return null;
     }
   }
 
   /// Remove a patient from Firestore
   Future<void> removePatient(Patient patient) async {
     try {
-      final query = await _firestore
-          .collection('patients')
-          .where('nom', isEqualTo: patient.nom)
-          .get();
+      if (patient.id != null && patient.id!.isNotEmpty) {
+        await _firestore.collection('patients').doc(patient.id).delete();
+      } else {
+        // fallback if id is missing
+        final query = await _firestore
+            .collection('patients')
+            .where('nom', isEqualTo: patient.nom)
+            .get();
 
-      for (var doc in query.docs) {
-        await _firestore.collection('patients').doc(doc.id).delete();
+        for (var doc in query.docs) {
+          await _firestore.collection('patients').doc(doc.id).delete();
+        }
       }
 
-      _allPatients.remove(patient);
+      _allPatients.removeWhere((p) => p.id == patient.id);
       _filteredPatients = List.from(_allPatients);
       notifyListeners();
     } catch (e) {

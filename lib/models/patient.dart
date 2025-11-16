@@ -1,5 +1,5 @@
 class Patient {
-  final String?id;
+  String? id;
   final String nom;
   final String email;
   final int age;
@@ -13,7 +13,7 @@ class Patient {
 
   factory Patient.fromMap(Map<String, dynamic> data) {
     return Patient(
-      id: data['id'] ,
+      id: data['id'],
       nom: data['nom'] ?? '',
       email: data['email'] ?? '',
       age: data['age'] ?? 0,
