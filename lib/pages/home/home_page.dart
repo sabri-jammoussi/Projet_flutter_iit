@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                         const BillingPage()),
                     _buildQuickButton(context, Icons.bar_chart, 'statistics'.tr,
                         StatisticsPage()),
-                    _buildQuickButton(context, Icons.scanner, 'ML_Kit',
+                    _buildQuickButton(context, Icons.scanner, 'scan_invoice'.tr,
                         const RecognitionPage()),
                     _buildQuickButton(context, Icons.notifications,
                         'notification'.tr, const NotificationHistoryPage()),
