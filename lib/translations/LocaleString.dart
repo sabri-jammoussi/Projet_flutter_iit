@@ -25,6 +25,7 @@ class LocalString extends Translations {
           'settings': 'Paramètres',
           'logout': 'Déconnexion',
           'notification': 'Notifications',
+          'scan_invoice': 'Scanner la facture',
         },
         'en': {
           'maps': 'Go to Maps',
@@ -49,6 +50,7 @@ class LocalString extends Translations {
           'settings': 'Settings',
           'logout': 'Logout',
           'notification': 'Notifications',
+          'scan_invoice': 'Scan Invoice',
         },
         'ar': {
           'maps': 'انتقل إلى الخرائط',
@@ -72,6 +74,7 @@ class LocalString extends Translations {
           'settings': 'الإعدادات',
           'logout': 'تسجيل الخروج',
           'notification': 'الإشعارات',
+          'scan_invoice': 'مسح الفاتورة',
         },
       };
 }

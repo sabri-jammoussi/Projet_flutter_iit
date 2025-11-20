@@ -111,13 +111,15 @@ class _ParametreState extends State<Parametre> {
                             final password = _passwordController.text.trim();
 
                             bool success = true;
-                            if (email.isNotEmpty && success) {
-                              success =
-                                  await controller.updateEmail(email, password);
-                            }
+                            // if (email.isNotEmpty && success) {
+                            //   success =
+                            //       await controller.updateEmail(email, password);
+                            // }
                             if (success && password.isNotEmpty) {
                               success =
                                   await controller.updatePassword(password);
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/login', (route) => false);
                             }
 
                             if (success) {

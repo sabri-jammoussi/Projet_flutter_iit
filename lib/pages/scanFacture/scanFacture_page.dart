@@ -188,65 +188,89 @@ class _RecognitionPageState extends State<RecognitionPage> {
                     ),
                   ),
                 Expanded(
-                  child: textElements.isEmpty
-                      ? Center(
-                          child: Text(
-                            "Aucun élément détecté.\nPrenez une photo pour voir la grille.",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.grey),
-                          ),
-                        )
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(16),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 1.2,
-                          ),
-                          itemCount: textElements.length,
-                          itemBuilder: (context, index) {
-                            final element = textElements[index];
-                            return Card(
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      element.text,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w600),
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      'Confiance : ${(element.confidence! * 100).toStringAsFixed(1)}%',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Table(
+                      border: TableBorder.all(color: Colors.grey),
+                      columnWidths: const {
+                        0: FlexColumnWidth(2),
+                        1: FlexColumnWidth(1),
+                      },
+                      children: [
+                        // Header
+                        const TableRow(
+                          decoration: BoxDecoration(color: Color(0xfff0f0f0)),
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Prestation",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Prix",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ],
                         ),
+                        const TableRow(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Consultation"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("80.00"),
+                            ),
+                          ],
+                        ),
+                        const TableRow(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Nettoyage dents"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("120.00"),
+                            ),
+                          ],
+                        ),
+                        const TableRow(
+                          decoration: BoxDecoration(color: Color(0xfff0f0f0)),
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Total TTC",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("200.00",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                        const TableRow(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("TVA"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("19%"),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
